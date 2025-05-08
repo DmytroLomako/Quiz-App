@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}QuizMaster{% endblock %}
+
+{% block links %}
+    <link rel="stylesheet" href="{% static 'css/home_not_auth.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="content">
+        <div class="home-info">
+            <div style="display: flex; gap: 10px;"><h1>Вітаємо в </h1> <h1 style="color: #1D4ED8;">Quiz Master!</h1></div>
+            <h2>QuizMaster - це платформа для проходження цікавих і пізнавальних тестів з різних тем.</h2>
+            <hr>
+            <h3>Створіть та запропонуйте навчальний план від дзвінка до дзвінка ресурси, які відповідають потребам кожного учня.</h3>
+            <a href="/join"><button>Приєднатися</button></a>
+        </div>
+    </div>
+{% endblock %}

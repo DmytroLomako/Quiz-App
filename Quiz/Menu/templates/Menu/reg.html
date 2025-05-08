@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Реєстрація{% endblock %}
+
+{% block links %}
+    <link rel="stylesheet" href="{% static 'css/reg.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="content">
+        <form action="" method="post">
+            <h1>Створити аккаунт</h1>
+            {% csrf_token %}
+            <div class="inputs-div">
+                <div class="input-div">
+                    <h3>Ім'я</h3>
+                    <input type="text" name="username">
+                </div>
+                <div class="input-div">
+                    <h3>Пароль</h3>
+                    <input type="password" name="password" id="">
+                </div>
+            </div>
+            {% if error != None %}
+                <p style="color: red;">{{ error }}</p>
+            {% endif %}
+            <button class="reg-button">Зареєструватися</button>
+            <div style="display: flex; flex-direction: row; gap: 6px;"><p>Вже є аккаунт?</p><a href="/auth">Увійти</a></div>
+        </form>
+    </div>
+{% endblock %}

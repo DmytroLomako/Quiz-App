@@ -1,0 +1,123 @@
+{% extends 'test_creation.html' %}
+{% load static %}
+
+{% block title %}Поєднання{% endblock %}
+
+{% block links %}
+    <link rel="stylesheet" href="{% static 'CreateTest/css/match.css' %}">
+{% endblock %}
+
+{% block type_options %}
+    <option value="multiple">Множинний вибір</option>
+    <option value="blank">Заповніть бланк</option>
+    <option value="match" selected>Поєднання</option>
+{% endblock %}
+
+{% block content %}
+    <div class="answers-div">
+        <div class="match-div">
+            <div class="hint-div" style="background-color: #EFA929;">
+                <div class="answer-actions">
+                    <button><img src="{% static 'CreateTest/img/trash.png' %}" alt=""></button>
+                    <button><img src="{% static 'CreateTest/img/picture.png' %}" alt=""></button>
+                    <div style="width: 100%; display: flex; justify-content: flex-end;">
+                        <input type="checkbox" name="" id="">
+                    </div>
+                </div>
+                <div class="hint-text-div">
+                    <textarea name="" placeholder="Введіть підказку" id=""></textarea>
+                </div>
+            </div>
+            <div class="answer-div" style="background-color: hsla(39, 86%, 55%, 0.75);">
+                <div class="answer-actions">
+                    <button><img src="{% static 'CreateTest/img/trash.png' %}" alt=""></button>
+                    <button><img src="{% static 'CreateTest/img/picture.png' %}" alt=""></button>
+                    <div style="width: 100%; display: flex; justify-content: flex-end;">
+                        <input type="checkbox" name="" id="">
+                    </div>
+                </div>
+                <div class="answer-text-div">
+                    <textarea name="" placeholder="Введіть відповідь" id=""></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="match-div">
+            <div class="hint-div" style="background-color: rgb(41, 189, 239);">
+                <div class="answer-actions">
+                    <button><img src="{% static 'CreateTest/img/trash.png' %}" alt=""></button>
+                    <button><img src="{% static 'CreateTest/img/picture.png' %}" alt=""></button>
+                    <div style="width: 100%; display: flex; justify-content: flex-end;">
+                        <input type="checkbox" name="" id="">
+                    </div>
+                </div>
+                <div class="hint-text-div">
+                    <textarea name="" placeholder="Введіть підказку" id=""></textarea>
+                </div>
+            </div>
+            <div class="answer-div" style="background-color: rgba(41, 189, 239, 0.75);">
+                <div class="answer-actions">
+                    <button><img src="{% static 'CreateTest/img/trash.png' %}" alt=""></button>
+                    <button><img src="{% static 'CreateTest/img/picture.png' %}" alt=""></button>
+                    <div style="width: 100%; display: flex; justify-content: flex-end;">
+                        <input type="checkbox" name="" id="">
+                    </div>
+                </div>
+                <div class="answer-text-div">
+                    <textarea name="" placeholder="Введіть відповідь" id=""></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="match-div">
+            <div class="hint-div" style="background-color: rgb(133, 41, 239);">
+                <div class="answer-actions">
+                    <button><img src="{% static 'CreateTest/img/trash.png' %}" alt=""></button>
+                    <button><img src="{% static 'CreateTest/img/picture.png' %}" alt=""></button>
+                    <div style="width: 100%; display: flex; justify-content: flex-end;">
+                        <input type="checkbox" name="" id="">
+                    </div>
+                </div>
+                <div class="hint-text-div">
+                    <textarea name="" placeholder="Введіть підказку" id=""></textarea>
+                </div>
+            </div>
+            <div class="answer-div" style="background-color: rgba(133, 41, 239, 0.75);">
+                <div class="answer-actions">
+                    <button><img src="{% static 'CreateTest/img/trash.png' %}" alt=""></button>
+                    <button><img src="{% static 'CreateTest/img/picture.png' %}" alt=""></button>
+                    <div style="width: 100%; display: flex; justify-content: flex-end;">
+                        <input type="checkbox" name="" id="">
+                    </div>
+                </div>
+                <div class="answer-text-div">
+                    <textarea name="" placeholder="Введіть відповідь" id=""></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="match-div">
+            <div class="hint-div" style="background-color: #EF7229;">
+                <div class="answer-actions">
+                    <button><img src="{% static 'CreateTest/img/trash.png' %}" alt=""></button>
+                    <button><img src="{% static 'CreateTest/img/picture.png' %}" alt=""></button>
+                    <div style="width: 100%; display: flex; justify-content: flex-end;">
+                        <input type="checkbox" name="" id="">
+                    </div>
+                </div>
+                <div class="hint-text-div">
+                    <textarea name="" placeholder="Введіть підказку" id=""></textarea>
+                </div>
+            </div>
+            <div class="answer-div" style="background-color: rgba(239, 114, 41, 0.75);">
+                <div class="answer-actions">
+                    <button><img src="{% static 'CreateTest/img/trash.png' %}" alt=""></button>
+                    <button><img src="{% static 'CreateTest/img/picture.png' %}" alt=""></button>
+                    <div style="width: 100%; display: flex; justify-content: flex-end;">
+                        <input type="checkbox" name="" id="">
+                    </div>
+                </div>
+                <div class="answer-text-div">
+                    <textarea name="" placeholder="Введіть відповідь" id=""></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

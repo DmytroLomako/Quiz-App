@@ -1,0 +1,54 @@
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'CreateTest/css/create_test.css' %}">
+    <link rel="stylesheet" href="{% static 'css/test_creation.css' %}">
+    <script src="{% static 'js/test_creation.js' %}" defer></script>
+    {% block links %}{% endblock %}
+</head>
+<body>
+    <header>
+        <button class="button-back">
+            <img src="{% static 'img/black_arrow_down.svg' %}" alt="">
+        </button>
+        <select class="select-type" style="background-image: url({% static 'CreateTest/img/dropdown_arrow.png' %});">
+            {% block type_options %}
+            {% endblock %}
+        </select>
+        <div class="header-saving-div">
+            <select class="select-type" style="background-image: url({% static 'CreateTest/img/dropdown_arrow.png' %});">
+                <option value="1_points" selected>1 бал</option>
+                <option value="2_points">2 бали</option>
+                <option value="3_points">3 бали</option>
+                <option value="4_points">4 бали</option>
+                {% for i in range %}
+                    <option value="{{i}}_points">{{i}} балів</option>
+                {% endfor %}
+            </select>
+            <button class="save-question-button">
+                <img src="{% static 'CreateTest/img/save.png' %}" alt="">
+                <p>Зберегти питання</p>
+            </button>
+        </div>
+    </header>
+    <main>
+        <div class="test-creation-window">
+            <div class="question-image-div">
+                <div class="image-icon-div">
+                    <button>
+                        <img src="{% static 'CreateTest/img/picture.png' %}" alt="">
+                    </button>
+                </div>
+                <div class="question-div">
+                    <textarea name="question" id="" placeholder="Введіть питання"></textarea>
+                </div>
+            </div>
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+</body>
+</html>

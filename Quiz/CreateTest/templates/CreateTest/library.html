@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    Мої тести
+{% endblock %}
+
+{% block links %}
+
+{% endblock %}
+
+{% block content %}
+    <div class="content">
+        {% for test in tests %}
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="id" value="{{ test.id }}">
+                {% if test.logo %}
+                    <img src="{{ test.logo.url }}" alt="">
+                {% endif %}
+                <div>
+                    <h3>{{ test.name }} {% if not test.finished %}<p>Чернетка</p>{% endif %}</h3>
+                    <p>{{ test.count_question }}</p>
+                    <h4>{{ test.user }}</h4>
+                </div>
+                <div>
+                    <button><img src="{% static 'CreateTest/img/trash.png' %}" alt=""></button>
+                    <button>Запустити</button>
+                </div>
+            </form>
+        {% endfor %}
+    </div>
+{% endblock %}

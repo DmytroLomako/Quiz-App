@@ -1,0 +1,32 @@
+{% extends 'test_creation.html' %}
+{% load static %}
+
+{% block title %}Заповніть бланк{% endblock %}
+
+{% block links %}
+    <link rel="stylesheet" href="{% static 'CreateTest/css/fill_blank.css' %}">
+{% endblock %}
+
+{% block type_options %}
+    <option value="multiple">Множинний вибір</option>
+    <option value="blank" selected>Заповніть бланк</option>
+    <option value="match">Поєднання</option>
+{% endblock %}
+
+{% block content %}
+    <div class="answer">
+        <input type="text" class="answer-input" placeholder="Введіть відповідь">
+    </div>
+    <div class="alternate-answers">
+        <h4>Альтернативні варіанти</h4>
+        <div class="alternate-answer">
+            <select name="" id="" style="background-image: url({% static 'CreateTest/img/dropdown_arrow_white.png' %});">
+                <option value="exactly">точно</option>
+                <option value="contains">містить</option>
+            </select>
+            <input type="text" class="alternate-answer-input" placeholder="Введіть відповідь">
+            <button><img src="{% static 'CreateTest/img/trash.png' %}" alt=""></button>
+        </div>
+        <div style="width: 55%; display:flex; justify-content:flex-start;"><button class="alternate-answer-button"><img src="{% static 'CreateTest/img/plus.svg' %}" alt="">Додати альтернативний варіант</button></div>
+    </div>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оберати вид питання</title>
+    <link rel="stylesheet" href="{% static 'CreateTest/css/create_test.css' %}">
+    <link rel="stylesheet" href="{% static 'CreateTest/css/choose_test.css' %}">
+</head>
+<body>
+    <header>
+        <button class="button-back">
+            <img src="{% static 'img/black_arrow_down.svg' %}" alt="">
+        </button>
+        <h3>Створити новий тест</h3>
+    </header>
+    <main>
+        <a href="/">
+            <div class="cards">
+                <h1>Множинний вибір</h1>
+                <img src="{% static 'CreateTest/img/multiple_choice.png' %}" alt="">
+                <div class="description-wrapper">
+                    <p>Перевірте утримання, попросивши студентів вибрати одну або кілька правильних відповідей. Використовуйте текст, зображення або математичні рівняння, щоб оживити ситуацію!</p>
+                </div>
+            </div>
+        </a>
+        <a href="/">
+            <div class="cards">
+                <h1>Заповніть бланк</h1>
+                <img src="{% static 'CreateTest/img/fill_blank.png' %}" alt="">
+                <div class="description-wrapper">
+                    <p>Запропонуйте своїм учням текст і перевірте, чи вони пам’ятають правильне написання accommodate accomodate accommodate.</p>
+                </div>
+            </div>
+        </a>
+        <a href="/">
+            <div class="cards">
+                <h1>Поєднання</h1>
+                <img src="{% static 'CreateTest/img/match.png' %}" alt="">
+                <div class="description-wrapper">
+                    <p>Оновіть стару добру класику та попросіть учнів зіставити що завгодно — від столиць до штатів до дробів із їхніми відсотками!</p>
+                </div>
+            </div>
+        </a>
+    </main>
+</body>
+</html>

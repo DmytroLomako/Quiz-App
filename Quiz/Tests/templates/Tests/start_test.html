@@ -1,0 +1,17 @@
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Початок тесту</title>
+    <script src="{% static 'js/start_test.js' %}" defer></script>
+</head>
+<body>
+    <input type="hidden" name="auth" value="{{ user.is_authenticated }}" id="auth">
+    {% if user.is_authenticated %}
+        <h3 id="username">{{ user.username }}</h3>
+    {% endif %}
+    <h1 id="test_code">{{ test.code }}</h1>
+</body>
+</html>

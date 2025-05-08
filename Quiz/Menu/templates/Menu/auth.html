@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Авторизація{% endblock %}
+
+{% block links %}
+    <link rel="stylesheet" href="{% static 'css/reg.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="content">
+    <form action="" method="post">
+        <h1>Увійти в аккаунт</h1>
+        {% csrf_token %}
+        <div class="inputs-div">
+            <div class="input-div">
+                <h3>Ім'я</h3>
+                <input type="text" name="username">
+            </div>
+            <div class="input-div">
+                <h3>Пароль</h3>
+                <input type="password" name="password" id="">
+            </div>
+        </div>
+        <button class="reg-button">Увійти</button>
+        <div style="display: flex; flex-direction: row; gap: 6px;"><p>Немає аккаунту?</p><a href="/reg">Зареєструватися</a></div>
+    </form>
+</div>
+{% endblock %}
