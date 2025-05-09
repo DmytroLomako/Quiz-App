@@ -1,10 +1,11 @@
 {% extends 'test_creation.html' %}
 {% load static %}
 
-{% block title %}Заповніть бланк{% endblock %}
+{% block title %}Множинний вибір{% endblock %}
 
 {% block links %}
     <link rel="stylesheet" href="{% static 'CreateTest/css/multiple_choice.css' %}">
+    <script src="{% static 'CreateTest/js/multiple_choice.js' %}" defer></script>
 {% endblock %}
 
 {% block type_options %}
@@ -17,51 +18,62 @@
     <div class="answers-div">
         <div class="answer-div" style="background-color: #EFA929;">
             <div class="answer-actions">
-                <button><img src="{% static 'CreateTest/img/trash.png' %}" alt=""></button>
+                <button class="delete-answer-button"><img src="{% static 'CreateTest/img/trash.png' %}" alt=""></button>
                 <button><img src="{% static 'CreateTest/img/picture.png' %}" alt=""></button>
                 <div style="width: 100%; display: flex; justify-content: flex-end;">
-                    <input type="checkbox" name="" id="">
+                    <div class="checkbox">
+                        <input type="hidden" name="is_correct" value="false">
+                    </div>
                 </div>
             </div>
             <div class="answer-text-div">
-                <textarea name="" placeholder="Введіть відповідь" id=""></textarea>
+                <div class="auto-expanding-answer-div" contenteditable="true" placeholder="Введіть відповідь"></div>
             </div>
         </div>
         <div class="answer-div" style="background-color: #29BDEF;">
             <div class="answer-actions">
-                <button><img src="{% static 'CreateTest/img/trash.png' %}" alt=""></button>
+                <button class="delete-answer-button"><img src="{% static 'CreateTest/img/trash.png' %}" alt=""></button>
                 <button><img src="{% static 'CreateTest/img/picture.png' %}" alt=""></button>
                 <div style="width: 100%; display: flex; justify-content: flex-end;">
-                    <input type="checkbox" name="" id="">
+                    <div class="checkbox">
+                        <input type="hidden" name="is_correct" value="false">
+                    </div>
                 </div>
             </div>
             <div class="answer-text-div">
-                <textarea name="" placeholder="Введіть відповідь" id=""></textarea>
+                <div class="auto-expanding-answer-div" contenteditable="true" placeholder="Введіть відповідь"></div>
             </div>
         </div>
         <div class="answer-div" style="background-color: #8529EF;">
             <div class="answer-actions">
-                <button><img src="{% static 'CreateTest/img/trash.png' %}" alt=""></button>
+                <button class="delete-answer-button"><img src="{% static 'CreateTest/img/trash.png' %}" alt=""></button>
                 <button><img src="{% static 'CreateTest/img/picture.png' %}" alt=""></button>
                 <div style="width: 100%; display: flex; justify-content: flex-end;">
-                    <input type="checkbox" name="" id="">
+                    <div class="checkbox">
+                        <input type="hidden" name="is_correct" value="false">
+                    </div>
                 </div>
             </div>
             <div class="answer-text-div">
-                <textarea name="" placeholder="Введіть відповідь" id=""></textarea>
+                <div class="auto-expanding-answer-div" contenteditable="true" placeholder="Введіть відповідь"></div>
             </div>
         </div>
         <div class="answer-div" style="background-color: #EF7229;">
             <div class="answer-actions">
-                <button><img src="{% static 'CreateTest/img/trash.png' %}" alt=""></button>
+                <button class="delete-answer-button"><img src="{% static 'CreateTest/img/trash.png' %}" alt=""></button>
                 <button><img src="{% static 'CreateTest/img/picture.png' %}" alt=""></button>
                 <div style="width: 100%; display: flex; justify-content: flex-end;">
-                    <input type="checkbox" name="" id="">
+                    <div class="checkbox">
+                        <input type="hidden" name="is_correct" value="false">
+                    </div>
                 </div>
             </div>
             <div class="answer-text-div">
-                <textarea name="" placeholder="Введіть відповідь" id=""></textarea>
+                <div class="auto-expanding-answer-div" contenteditable="true" placeholder="Введіть відповідь"></div>
             </div>
         </div>
+        <button class="add-answer-button">
+            <img src="{% static 'CreateTest/img/plus.svg' %}" alt="">
+        </button>
     </div>
 {% endblock %}

@@ -1,4 +1,4 @@
-const selectElement = document.querySelector('.select-type');
+let selectElement = document.querySelector('.select-type');
 selectElement.addEventListener('change', function() {
     const selectedValue = this.value;
     let redirectUrl = '';
@@ -21,4 +21,21 @@ selectElement.addEventListener('change', function() {
     if (redirectUrl) {
         window.location.href = redirectUrl.join('/');
     }
+});
+
+document.querySelector('.button-back').addEventListener('click', function() {
+    window.history.back()
+});
+
+let questionImageDiv = document.querySelector('.question-image-div')
+let questionDiv = document.querySelector('.question-div')
+let autoExpandingDiv = document.querySelector('.auto-expanding-div')
+questionDiv.addEventListener('click', function(event) {
+    autoExpandingDiv.focus();
+})
+autoExpandingDiv.addEventListener('focus', function(event) {
+    questionImageDiv.style.backgroundColor = '#131e39'
+});
+autoExpandingDiv.addEventListener('focusout', function(event) {
+    questionImageDiv.style.backgroundColor = '#213562'
 });

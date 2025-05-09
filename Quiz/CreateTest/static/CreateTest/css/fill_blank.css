@@ -30,7 +30,8 @@
     padding: 30px 0px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
+    overflow: auto;
     align-items: center;
     gap: 25px;
 }
@@ -93,6 +94,10 @@
     background-color: rgba(217, 217, 217, 0.2);
     font-size: 16px;
     color: white;
+}
+.alternate-answer-button:hover, .alternate-answer button:hover{
+    cursor: pointer;
+    background-color: rgba(217, 217, 217, 0.3);;
 }
 .alternate-answer-button img{
     width: 14px;

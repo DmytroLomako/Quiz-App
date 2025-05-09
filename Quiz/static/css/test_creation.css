@@ -26,8 +26,19 @@
 .image-icon-div button, .answer-actions button{
     min-width: 30px;
     height: 30px;
-    background-color: rgba(255, 255, 255, 0.7);
+    background-color: rgba(179, 179, 179, 0.7);
     border-radius: 5px;
+}
+.image-icon-div button:hover{
+    cursor: pointer;
+    filter: brightness(1.2);
+}
+.answer-actions button{
+    background-color: rgba(255, 255, 255, 0.7);
+}
+.answer-actions button:hover{
+    cursor: pointer;
+    filter: brightness(0.8);
 }
 .image-icon-div button img, .answer-actions button img{
     width: 17px;
@@ -35,6 +46,7 @@
 .question-div, .answer-text-div{
     width: 100%;
     height: 100%;
+    min-height: 70px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -53,4 +65,28 @@
 }
 .question-div textarea:focus-visible, .answer-text-div textarea:focus-visible{
     outline: none;
+}
+.question-div:hover{
+    cursor: text;
+}
+.auto-expanding-div {
+    width: 100%;
+    min-height: 50px;
+    max-height: 100%;
+    background-color: transparent;
+    font-size: 24px;
+    text-align: center;
+    color: white;
+    overflow: auto;
+}
+.auto-expanding-div:focus-visible{
+    outline: none;
+}
+.auto-expanding-div:empty:before {
+    content: attr(placeholder);
+    color: #D9D9D9;
+    display: block;
+}
+select:hover{
+    cursor: pointer;
 }
