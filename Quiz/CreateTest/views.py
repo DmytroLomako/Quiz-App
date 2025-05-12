@@ -55,3 +55,11 @@ def render_library(request):
         start_test.save()
         return redirect(f'/tests/start_test/{code}')
     return render(request, 'CreateTest/library.html', context={'tests': tests})
+
+@login_required(login_url='/auth/')
+def render_test_info(request, test_id):
+    test = Test.objects.get(id=test_id)
+    if test.user == request.user:
+        return render(request, 'CreateTest/test_info.html', context={'test': test, 'range': range(5, 16)})
+    else:
+        return redirect('/')

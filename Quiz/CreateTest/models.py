@@ -19,7 +19,7 @@ class Question(models.Model):
     image = models.ImageField(upload_to='question')
     answers = models.TextField()
     answer_type = models.CharField(max_length=50)
-    correct_answer = models.CharField(max_length=255)
+    correct_answer = models.TextField()
     test = models.ForeignKey(Test, on_delete=models.CASCADE)
     mark = models.IntegerField(default=1)
     

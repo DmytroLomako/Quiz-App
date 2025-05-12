@@ -1,29 +1,5 @@
 let matchColors = ['#EFA929', '#29BDEF', '#8529EF', '#EF7229', '#3AAB23'];
 
-let checkboxes = document.querySelectorAll('.checkbox');
-
-checkboxes.forEach((checkbox) => {
-    if (!checkbox.classList.contains('checked') && !checkbox.classList.contains('unchecked')) {
-        checkbox.classList.add('unchecked');
-    }
-    checkbox.addEventListener('click', toggleCheckbox);
-});
-
-function toggleCheckbox(event) {
-    const checkbox = event.currentTarget;
-    if (checkbox.classList.contains('checked')) {
-        checkbox.classList.remove('checked');
-        checkbox.classList.add('unchecked');
-    } else {
-        checkbox.classList.remove('unchecked');
-        checkbox.classList.add('checked');
-    }
-    const hiddenInput = checkbox.querySelector('input');
-    if (hiddenInput) {
-        hiddenInput.value = checkbox.classList.contains('checked') ? 'true' : 'false';
-    }
-}
-
 function addOpacity(element, color){
     let r, g, b;
     if (color.startsWith('rgb')) {
@@ -69,13 +45,6 @@ function addMatchDiv() {
         let textareas = newMatchDiv.querySelectorAll('textarea');
         textareas.forEach(textarea => {
             textarea.value = '';
-        });
-        
-        let checkboxes = newMatchDiv.querySelectorAll('.checkbox');
-        checkboxes.forEach(checkbox => {
-            checkbox.classList.remove('checked');
-            checkbox.classList.add('unchecked');
-            checkbox.querySelector('input').value = 'false';
         });
         
         let deleteButtons = newMatchDiv.querySelectorAll('.delete-answer-button');

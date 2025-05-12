@@ -23,9 +23,9 @@ selectElement.addEventListener('change', function() {
     }
 });
 
-document.querySelector('.button-back').addEventListener('click', function() {
-    window.history.back()
-});
+// document.querySelector('.button-back').addEventListener('click', function() {
+//     window.history.back()
+// });
 
 let questionImageDiv = document.querySelector('.question-image-div')
 let questionDiv = document.querySelector('.question-div')
