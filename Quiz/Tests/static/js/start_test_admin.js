@@ -13,5 +13,13 @@ socket.onmessage = function(event){
             username = username[0]
         }
         usersDiv.innerHTML += `<p>${username}</p>`
+    } else if(data['type'] == 'user_disconnect'){
+        let username = data['username']
+        let users = usersDiv.querySelectorAll('p')
+        users.forEach(user => {
+            if(user.textContent == username){
+                user.remove()
+            }
+        })
     }
 }

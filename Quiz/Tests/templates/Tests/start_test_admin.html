@@ -11,7 +11,10 @@
     <h1 id="test_code">{{ test.code }}</h1>
     <button>Почати тест</button>
     <div class="users">
-
+        {% for user in users %}
+            <p>{{ user }}</p>
+        {% endfor %}
     </div>
+
 </body>
 </html>
