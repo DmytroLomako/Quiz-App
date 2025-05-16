@@ -28,6 +28,34 @@ def render_select_question(request, test_id):
     
 @login_required(login_url='/auth/')
 def render_multiple_choice(request, test_id):
+    if request.method == 'POST':
+        test = Test.objects.get(id=test_id)
+        question_number = test.count_question() + 1
+        question_text = request.POST.get('question')
+        list_answers = request.POST.getlist('answer')
+        list_correct_answers = request.POST.getlist('is_correct')
+        question = Question.objects.create(
+            question_number = question_number,
+            question = question_text,
+            image = request.FILES.get('question_image') if 'question_image' in request.FILES else None,
+            answers = list_answers,
+            answer_type = 'multiple_choice',
+            correct_answer = list_correct_answers,
+            test = Test.objects.get(id=test_id)
+        )
+        question.save()
+        
+        for i, answer in enumerate(list_answers):
+            image_key = f'answer_image_{i}'
+            if image_key in request.FILES:
+                answer_image = AnswerImage(
+                    image = request.FILES[image_key],
+                    question = question,
+                    answer_id = str(i)
+                )
+                answer_image.save()
+                
+        return redirect(f'/create_quiz/test_info/{test_id}')
     return render(request, 'CreateTest/multiple_choice.html', context={'test_id': test_id, 'range': range(5, 16)})
 
 @login_required(login_url='/auth/')

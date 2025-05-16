@@ -25,7 +25,7 @@ class Question(models.Model):
     time = models.IntegerField(default=30)
     
     def __str__(self):
-        return self.text
+        return self.question
     
 class AnswerImage(models.Model):
     image = models.ImageField(upload_to='answer')

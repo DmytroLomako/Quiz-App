@@ -30,12 +30,28 @@ selectElement.addEventListener('change', function() {
 let questionImageDiv = document.querySelector('.question-image-div')
 let questionDiv = document.querySelector('.question-div')
 let autoExpandingDiv = document.querySelector('.auto-expanding-div')
+let questionInput = document.getElementById('questionInput')
 questionDiv.addEventListener('click', function(event) {
     autoExpandingDiv.focus();
 })
 autoExpandingDiv.addEventListener('focus', function(event) {
     questionImageDiv.style.backgroundColor = '#131e39'
 });
+autoExpandingDiv.addEventListener('input', function(event) {
+    questionInput.value = autoExpandingDiv.textContent
+});
 autoExpandingDiv.addEventListener('focusout', function(event) {
     questionImageDiv.style.backgroundColor = '#213562'
+});
+
+let buttonSave = document.querySelector('.save-question-button')
+let form = document.querySelector('.test-creation-window')
+buttonSave.addEventListener('click', function(event){
+    form.submit();
+})
+
+let imageQuestionButton = document.querySelector('.image-question-button');
+imageQuestionButton.addEventListener('click', () => {
+    let imageInput = imageQuestionButton.nextElementSibling;
+    imageInput.click();
 });

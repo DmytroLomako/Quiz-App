@@ -36,19 +36,22 @@
         </div>
     </header>
     <main>
-        <div class="test-creation-window">
+        <form method="post" enctype="multipart/form-data" class="test-creation-window">
+            {% csrf_token %}
             <div class="question-image-div">
                 <div class="image-icon-div">
-                    <button>
+                    <button type="button" class="image-question-button">
                         <img src="{% static 'CreateTest/img/picture.png' %}" alt="">
                     </button>
+                    <input type="file" name="question_image" class="question_image" accept="image/*" style="display: none;">
                 </div>
                 <div class="question-div">
                     <div class="auto-expanding-div" contenteditable="true" placeholder="Введіть питання"></div>
+                    <input type="hidden" name="question" id="questionInput">
                 </div>
             </div>
             {% block content %}{% endblock %}
-        </div>
+        </form>
     </main>
 </body>
 </html>

@@ -1,4 +1,5 @@
 let autoExpandingAnswerDivs = document.querySelectorAll('.auto-expanding-answer-div');
+let answerInputs = document.querySelectorAll('.answer-input');
 let answerTextDivs = document.querySelectorAll('.answer-text-div');
 const answerColors = ['#EFA929', '#29BDEF', '#8529EF', '#EF7229', '#3AAB23']
 
@@ -8,6 +9,10 @@ autoExpandingAnswerDivs.forEach((div) => {
 
     div.addEventListener('focus', (e) => {
         answerDiv.classList.add('obfuscation');
+    })
+
+    div.addEventListener('input', (e) => {
+        div.nextElementSibling.value = div.textContent;
     })
 
     div.addEventListener('focusout', (e) => {
@@ -21,8 +26,6 @@ answerTextDivs.forEach((div) => {
         autoExpandingAnswerDiv.focus();
     })
 })
-
-
 
 let checkboxes = document.querySelectorAll('.checkbox');
 
@@ -48,6 +51,15 @@ function toggleCheckbox(event) {
     }
 }
 
+function updateImageInputs() {
+    let imageInputs = document.querySelectorAll('.answer-image');
+    imageInputs.forEach((input, index) => {
+        input.name = `answer-image_${index}`;
+    })
+}
+
+updateImageInputs();
+
 function addAnswerDiv() {
     let allAnswerDivs = document.querySelectorAll('.answer-div');
     if (allAnswerDivs.length < 5) {
@@ -57,7 +69,7 @@ function addAnswerDiv() {
         newAnswerDiv.querySelector('.auto-expanding-answer-div').textContent = '';
         newAnswerDiv.querySelector('.checkbox').classList.remove('checked');
         newAnswerDiv.querySelector('.checkbox').classList.add('unchecked');
-        newAnswerDiv.querySelector('input').value = 'false';
+        newAnswerDiv.querySelector('.checkbox-input').value = 'false';
         const deleteButton = newAnswerDiv.querySelector('.delete-answer-button');
         deleteButton.addEventListener('click', deleteAnswerDiv);
         const answersContainer = document.querySelector('.answers-div');
@@ -68,6 +80,7 @@ function addAnswerDiv() {
     allAnswerDivs.forEach((div, index) => {
         div.querySelector('.auto-expanding-answer-div').style.maxWidth = `${(parseFloat(window.getComputedStyle(answersDiv).width) - 45 - 15 * (allAnswerDivs.length - 1)) / (allAnswerDivs.length) - 20}px`;
     })
+    updateImageInputs();
 }
 
 let addAnswerButton = document.querySelector('.add-answer-button');
@@ -89,9 +102,17 @@ function deleteAnswerDiv(event) {
             div.style.backgroundColor = answerColors[index];
             div.querySelector('.auto-expanding-answer-div').style.maxWidth = `${width}px`;
         })
-        console.log(width);
     }
+    updateImageInputs();
 }
 deleteAnswerButtons.forEach(button => {
     button.addEventListener('click', deleteAnswerDiv);
+})
+
+let imageAnswerButtons = document.querySelectorAll('.image-answer-button');
+imageAnswerButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        let imageInput = button.nextElementSibling;
+        imageInput.click();
+    });
 })
