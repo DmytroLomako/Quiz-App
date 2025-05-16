@@ -1,6 +1,7 @@
 const quizCode = document.getElementById('test_code').textContent
 const socketUrl = `ws://${window.location.host}/ws/quiz/${quizCode}/`
 let usersDiv = document.querySelector('.users')
+let startTest = document.getElementById('startTest')
 
 const socket = new WebSocket(socketUrl)
 
@@ -12,14 +13,36 @@ socket.onmessage = function(event){
         if(Array.isArray(username)){
             username = username[0]
         }
-        usersDiv.innerHTML += `<p>${username}</p>`
-    } else if(data['type'] == 'user_disconnect'){
+        let user = document.createElement('p')
+        user.innerHTML += `<b>${username}</b> <button class="delete-user">×</button>`
+        let buttonDelete = user.querySelector('.delete-user')
+        buttonDelete.addEventListener('click', deleteUser)
+        usersDiv.append(user)
+    } else if(data['type'] == 'user_disconnect' && data['receiver'] == 'admin'){
         let username = data['username']
-        let users = usersDiv.querySelectorAll('p')
+        let users = usersDiv.querySelectorAll('b')
         users.forEach(user => {
             if(user.textContent == username){
-                user.remove()
+                user.parentElement.remove()
             }
         })
     }
 }
+
+let buttonsDelete = document.querySelectorAll('.delete-user')
+buttonsDelete.forEach(button => {
+    button.addEventListener('click', deleteUser)
+})
+function deleteUser (event){
+    let username = event.target.previousElementSibling.textContent
+    socket.send(JSON.stringify({
+        'type': 'admin_user_disconnect',
+        'username': username
+    }))
+}
+
+startTest.addEventListener('click', () => {
+    socket.send(JSON.stringify({
+        'type': 'start_test'
+    }))
+})

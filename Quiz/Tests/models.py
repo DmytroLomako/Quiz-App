@@ -24,3 +24,4 @@ class StartTest(models.Model):
     code = models.CharField(max_length=4)
     users = models.ManyToManyField(User, related_name='users')
     users_not_auth = models.TextField()
+    current_question = models.IntegerField(default=-1)

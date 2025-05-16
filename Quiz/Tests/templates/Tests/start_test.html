@@ -5,10 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Початок тесту</title>
+    <script src="{% static 'js/jquery.js' %}" defer></script>
     <script src="{% static 'js/start_test.js' %}" defer></script>
 </head>
 <body>
     <input type="hidden" name="auth" value="{{ user.is_authenticated }}" id="auth">
+    {% csrf_token %}
     {% if user.is_authenticated %}
         <h3 id="username">{{ user.username }}</h3>
     {% endif %}

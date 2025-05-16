@@ -15,13 +15,19 @@ class Test(models.Model):
         return len(Question.objects.filter(test=self))
     
 class Question(models.Model):
+    question_number = models.IntegerField(default=0)
     question = models.CharField(max_length=255)
     image = models.ImageField(upload_to='question')
     answers = models.TextField()
     answer_type = models.CharField(max_length=50)
     correct_answer = models.TextField()
     test = models.ForeignKey(Test, on_delete=models.CASCADE)
-    mark = models.IntegerField(default=1)
+    time = models.IntegerField(default=30)
     
     def __str__(self):
         return self.text
+    
+class AnswerImage(models.Model):
+    image = models.ImageField(upload_to='answer')
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    answer_id = models.TextField()

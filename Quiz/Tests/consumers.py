@@ -89,14 +89,45 @@ class QuizConsumers(AsyncWebsocketConsumer):
                     self.quiz_group_name,
                     {
                         'type': 'user_disconnect',
-                        'username': text_data['username']
+                        'username': text_data['username'],
+                        'receiver': 'admin'
                     }
                 )
             except:
                 print('disconnect error')
+        elif text_data['type'] == 'admin_user_disconnect':
+            username = text_data['username']
+            await self.channel_layer.group_send(
+                self.quiz_group_name,
+                {
+                    'type': 'user_disconnect',
+                    'username': username,
+                    'receiver': 'user'
+                }
+            )
+        elif text_data['type'] == 'start_test':
+            start_test = await self.get_test_admin(True)
+            start_test.current_question = 0
+            await sync_to_async(start_test.save)()
+            await self.channel_layer.group_send(
+                self.quiz_group_name,
+                {
+                    'type': 'start_test',
+                    'question_number': start_test.current_question,
+                    'test_id': start_test.id
+                }
+            )
                 
     async def user_disconnect(self, event):
         await self.send(text_data=json.dumps({
             'type': 'user_disconnect',
-            'username': event['username']
+            'username': event['username'],
+            'receiver': event['receiver']
+        }))
+        
+    async def start_test(self, event):
+        await self.send(text_data=json.dumps({
+            'type': 'start_test',
+            'question_number': event['question_number'],
+            'test_id': event['test_id']
         }))

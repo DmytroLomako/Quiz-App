@@ -9,10 +9,10 @@
 </head>
 <body>
     <h1 id="test_code">{{ test.code }}</h1>
-    <button>Почати тест</button>
+    <button id="startTest">Почати тест</button>
     <div class="users">
         {% for user in users %}
-            <p>{{ user }}</p>
+            <p><b>{{ user }}</b> <button class="delete-user">×</button></p>
         {% endfor %}
     </div>
 

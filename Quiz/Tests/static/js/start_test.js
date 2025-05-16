@@ -13,6 +13,31 @@ for (let index = 0; index < cookies.length; index++) {
 
 function workSocket(){
     socket = new WebSocket(socketUrl)
+    socket.onmessage = function(event){
+        let data = JSON.parse(event.data)
+        if(data['type'] == 'user_disconnect' && data['receiver'] == 'user'){
+            let cookie = `quiz_${quizCode}`
+            document.cookie = `${cookie}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`
+            socket.send(JSON.stringify({
+                'type': 'user_disconnect',
+                'username': data['username']
+            }))
+            window.location.href = '/tests/delete_from_test'
+        } else if(data['type'] == 'start_test'){
+            $.ajax({
+                url: '/tests/get_question',
+                type: 'POST',
+                data: {
+                    'csrfmiddlewaretoken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                    'test_id': data['test_id'],
+                    'question_number': data['question_number']
+                },
+                success: function(response){
+                   console.log(response)
+                }
+            })
+        }
+    }
 }
 
 let auth = document.getElementById('auth').value
@@ -30,7 +55,7 @@ if(existUser || auth == 'True'){
         }
     } else if(auth == 'True'){
         let name = document.getElementById('username').textContent
-        document.cookie = `quiz_${quizCode}=${name}`
+        document.cookie = `quiz_${quizCode}=${name}; path=/;`
     }
     workSocket()
 } else {
@@ -47,7 +72,7 @@ if(existUser || auth == 'True'){
         usernameHeader.textContent = name
         usernameHeader.id = 'username'
         document.body.append(usernameHeader)
-        document.cookie = `quiz_${quizCode}=${name}`
+        document.cookie = `quiz_${quizCode}=${name}; path=/;`
         socketUrl += `?name=${name}`
         workSocket()
         form.remove()
