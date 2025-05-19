@@ -29,7 +29,6 @@ def render_select_question(request, test_id):
 @login_required(login_url='/auth/')
 def render_multiple_choice(request, test_id):
     if request.method == 'POST':
-        print(request.POST)
         test = Test.objects.get(id=test_id)
         question_number = test.count_question() + 1
         question_text = request.POST.get('question')
@@ -62,6 +61,33 @@ def render_multiple_choice(request, test_id):
 
 @login_required(login_url='/auth/')
 def render_fill_blank(request, test_id):
+    if request.method == 'POST':
+        test = Test.objects.get(id=test_id)
+        question_number = test.count_question() + 1
+        question_text = request.POST.get('question')
+        answer = request.POST.get('correct_answer')
+        alternate_answers = request.POST.getlist('alternate_answers')
+        alternate_types = request.POST.getlist('alternate_types')
+        
+        alternate_data = []
+        for i in range(len(alternate_answers)):
+            alternate_data.append({
+                'answer': alternate_answers[i],
+                'type': alternate_types[i]
+            })
+        
+        question = Question.objects.create(
+            question_number=question_number,
+            question=question_text,
+            image=request.FILES.get('question_image') if 'question_image' in request.FILES else None,
+            answers=alternate_data,
+            answer_type='fill_blank',
+            correct_answer=answer,
+            test=test
+        )
+        question.save()
+                        
+        return redirect(f'/create_quiz/test_info/{test_id}')
     return render(request, 'CreateTest/fill_blank.html', context={'test_id': test_id, 'range': range(5, 16)})
 
 @login_required(login_url='/auth/')

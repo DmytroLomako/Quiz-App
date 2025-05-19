@@ -1,3 +1,9 @@
+a{
+    text-decoration: none;
+}
+button:hover{
+    cursor: pointer;
+}
 header h3{
     font-size: 20px;
     font-weight: 500;

@@ -10,9 +10,11 @@
 </head>
 <body>
     <header>
-        <button class="button-back">
-            <img src="{% static 'img/black_arrow_down.svg' %}" alt="">
-        </button>
+        <a href="/">
+            <button class="button-back">
+                <img src="{% static 'img/black_arrow_down.svg' %}" alt="">
+            </button>
+        </a>
         {% if error %}
             <h3 style="color: rgb(208, 31, 31);">{{ error }}</h3>
         {% else %}

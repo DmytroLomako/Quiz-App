@@ -10,9 +10,11 @@
 </head>
 <body>
     <header>
-        <button class="button-back">
-            <img src="{% static 'img/black_arrow_down.svg' %}" alt="">
-        </button>
+        <a href="{% url 'library' %}">
+            <button class="button-back">
+                <img src="{% static 'img/black_arrow_down.svg' %}" alt="">
+            </button>
+        </a>
         <h3>Тест без назви</h3>
         <div class="header-saving-div">
             <button class="save-question-button">
@@ -26,10 +28,12 @@
             <h1>3 питання</h1>
             <h2>(3 бали)</h2>
             <div class="add-button-div">
-                <button class="add-button">
-                    <img src="{% static 'CreateTest/img/plus_blue.svg' %}" alt="">
-                    Додати питання
-                </button>
+                <a href="{% url 'select_question' test.id %}">
+                    <button class="add-button">
+                        <img src="{% static 'CreateTest/img/plus_blue.svg' %}" alt="">
+                        Додати питання
+                    </button>
+                </a>
             </div>
         </div>
         <div class="question-div">

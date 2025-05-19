@@ -10,9 +10,11 @@
 </head>
 <body>
     <header>
-        <button class="button-back">
-            <img src="{% static 'img/black_arrow_down.svg' %}" alt="">
-        </button>
+        <a href="{% url 'test_info' test_id %}">
+            <button class="button-back">
+                <img src="{% static 'img/black_arrow_down.svg' %}" alt="">
+            </button>
+        </a>
         <h3>Створити нове питання</h3>
     </header>
     <main>

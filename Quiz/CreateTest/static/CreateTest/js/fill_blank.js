@@ -2,6 +2,8 @@ let addAlternateButton = document.querySelector('.alternate-answer-button');
 if (addAlternateButton) {
     addAlternateButton.addEventListener('click', addAlternateAnswer);
 }
+let select = document.querySelector('.select');
+selectChange(select);
 
 function addAlternateAnswer() {
     let alternateAnswersContainer = document.querySelector('.alternate-answers');
@@ -11,6 +13,10 @@ function addAlternateAnswer() {
     if (input) {
         input.value = '';
     }
+    let select = newAlternateAnswer.querySelector('.select');
+    let selectInput = newAlternateAnswer.querySelector('.select-input');
+    selectInput.value = select.options[select.selectedIndex].value;
+    selectChange(select);
     let trashButton = newAlternateAnswer.querySelector('button');
     if (trashButton) {
         trashButton.addEventListener('click', deleteAlternateAnswer);
@@ -18,6 +24,16 @@ function addAlternateAnswer() {
     let addButtonContainer = document.querySelector('.alternate-answers > div:last-child');
     alternateAnswersContainer.insertBefore(newAlternateAnswer, addButtonContainer);
     alternateAnswersContainer.scrollTop = alternateAnswersContainer.scrollHeight;
+}
+
+function selectChange(select) {
+    select.addEventListener('change', () => {
+        let selectedOption = select.options[select.selectedIndex];
+        let selectInput = select.nextElementSibling
+        selectInput.value = selectedOption.value;
+        console.log(selectInput.value);
+    })
+    console.log(select.value);
 }
 
 function deleteAlternateAnswer(event) {

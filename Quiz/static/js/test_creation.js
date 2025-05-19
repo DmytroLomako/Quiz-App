@@ -47,6 +47,7 @@ autoExpandingDiv.addEventListener('focusout', function(event) {
 let buttonSave = document.querySelector('.save-question-button')
 let form = document.querySelector('.test-creation-window')
 buttonSave.addEventListener('click', function(event){
+    event.preventDefault()
     form.submit();
 })
 
