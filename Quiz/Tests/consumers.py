@@ -5,6 +5,7 @@ from asgiref.sync import sync_to_async
 from channels.db import database_sync_to_async
 from urllib.parse import parse_qs
 from .models import *
+from django.contrib.auth.models import User
 
 
 
@@ -22,7 +23,9 @@ class QuizConsumers(AsyncWebsocketConsumer):
         await self.accept()
         params = parse_qs(self.scope['query_string'].decode())
         if not self.user.is_authenticated or self.user != admin:
+            id = None
             if self.user.is_authenticated: 
+                id = self.user.id
                 username = self.user.username
             else:
                 username = params.get('name', '')
@@ -47,7 +50,8 @@ class QuizConsumers(AsyncWebsocketConsumer):
                     self.quiz_group_name,
                     {
                         'type': 'user_connect',
-                        'username': username
+                        'username': username,
+                        'id': id
                     }
                 )
             
@@ -67,7 +71,8 @@ class QuizConsumers(AsyncWebsocketConsumer):
     async def user_connect(self, event):
         await self.send(text_data=json.dumps({
             'type': 'user_connect',
-            'username': event['username']
+            'username': event['username'],
+            'id': event['id']
         }))
         
     async def receive(self, text_data=None):
@@ -96,7 +101,19 @@ class QuizConsumers(AsyncWebsocketConsumer):
             except:
                 print('disconnect error')
         elif text_data['type'] == 'admin_user_disconnect':
+            user_id = text_data['user_id']
             username = text_data['username']
+            start_test = await self.get_test_admin(True)
+            if user_id != 'null' and user_id is not None:
+                user = await sync_to_async(User.objects.get)(id=int(user_id))
+                await sync_to_async(start_test.users.remove)(user)
+            else:
+                usernames = start_test.users_not_auth.split(', ')
+                for name in usernames[:-1]:
+                    if name == username:
+                        usernames.remove(name)
+                start_test.users_not_auth = ', '.join(usernames)
+            await sync_to_async(start_test.save)()
             await self.channel_layer.group_send(
                 self.quiz_group_name,
                 {

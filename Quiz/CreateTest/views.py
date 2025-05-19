@@ -29,6 +29,7 @@ def render_select_question(request, test_id):
 @login_required(login_url='/auth/')
 def render_multiple_choice(request, test_id):
     if request.method == 'POST':
+        print(request.POST)
         test = Test.objects.get(id=test_id)
         question_number = test.count_question() + 1
         question_text = request.POST.get('question')
@@ -46,7 +47,8 @@ def render_multiple_choice(request, test_id):
         question.save()
         
         for i, answer in enumerate(list_answers):
-            image_key = f'answer_image_{i}'
+            image_key = f'answer-image_{i}'
+            print(image_key, request.FILES)
             if image_key in request.FILES:
                 answer_image = AnswerImage(
                     image = request.FILES[image_key],

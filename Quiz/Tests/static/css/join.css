@@ -1,0 +1,4 @@
+.code-input::-webkit-outer-spin-button,
+.code-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}

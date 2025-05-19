@@ -3,7 +3,7 @@ let answerInputs = document.querySelectorAll('.answer-input');
 let answerTextDivs = document.querySelectorAll('.answer-text-div');
 const answerColors = ['#EFA929', '#29BDEF', '#8529EF', '#EF7229', '#3AAB23']
 
-autoExpandingAnswerDivs.forEach((div) => {
+function addAnswerEvent(div) {
     div.style.maxWidth = window.getComputedStyle(div).width;
     let answerDiv = div.parentElement.parentElement;
 
@@ -18,7 +18,8 @@ autoExpandingAnswerDivs.forEach((div) => {
     div.addEventListener('focusout', (e) => {
         answerDiv.classList.remove('obfuscation');
     })
-});
+};
+autoExpandingAnswerDivs.forEach(addAnswerEvent)
 
 answerTextDivs.forEach((div) => {
     div.addEventListener('click', (e) => {
@@ -67,6 +68,7 @@ function addAnswerDiv() {
         const newAnswerDiv = answerDiv.cloneNode(true);
         newAnswerDiv.style.backgroundColor = answerColors[allAnswerDivs.length];
         newAnswerDiv.querySelector('.auto-expanding-answer-div').textContent = '';
+        addAnswerEvent(newAnswerDiv.querySelector('.auto-expanding-answer-div'))
         newAnswerDiv.querySelector('.checkbox').classList.remove('checked');
         newAnswerDiv.querySelector('.checkbox').classList.add('unchecked');
         newAnswerDiv.querySelector('.checkbox-input').value = 'false';

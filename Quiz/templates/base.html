@@ -19,7 +19,7 @@
             </div>
             <div class="main">
                 <div class="header">
-                    <button>Введіть код</button>
+                    <a href="{% url 'join' %}"><button>Введіть код</button></a>
                     <a href="/logout"><button>{{ user.username }} <img src="{% static 'img/black_arrow_down.svg' %}" alt=""></button></a>
         {% else %}
             <div class="reg-auth">

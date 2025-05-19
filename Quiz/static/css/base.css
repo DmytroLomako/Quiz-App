@@ -115,6 +115,10 @@ body{
     align-items: center;
     background-color: white;
     gap: 10px;
+    cursor: pointer;
+}
+.header a{
+    text-decoration: none;
 }
 .content{
     margin-top: 44px;

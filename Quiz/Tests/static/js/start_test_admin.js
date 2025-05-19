@@ -9,12 +9,13 @@ socket.onmessage = function(event){
     let data = JSON.parse(event.data)
     console.log('received', data)
     if(data['type'] == 'user_connect'){
+        let userId = data['id']
         let username = data['username']
         if(Array.isArray(username)){
             username = username[0]
         }
         let user = document.createElement('p')
-        user.innerHTML += `<b>${username}</b> <button class="delete-user">×</button>`
+        user.innerHTML += `<input type="hidden" class="userId" value="${userId}"> <b>${username}</b> <button class="delete-user">×</button>`
         let buttonDelete = user.querySelector('.delete-user')
         buttonDelete.addEventListener('click', deleteUser)
         usersDiv.append(user)
@@ -35,10 +36,16 @@ buttonsDelete.forEach(button => {
 })
 function deleteUser (event){
     let username = event.target.previousElementSibling.textContent
+    let userId = event.target.parentElement.querySelector('.userId')
+    if (userId){
+        userId = userId.value
+    }
     socket.send(JSON.stringify({
         'type': 'admin_user_disconnect',
-        'username': username
+        'username': username,
+        'user_id': userId
     }))
+    event.target.parentElement.remove()
 }
 
 startTest.addEventListener('click', () => {

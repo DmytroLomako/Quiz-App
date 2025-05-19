@@ -16,13 +16,11 @@ function workSocket(){
     socket.onmessage = function(event){
         let data = JSON.parse(event.data)
         if(data['type'] == 'user_disconnect' && data['receiver'] == 'user'){
-            let cookie = `quiz_${quizCode}`
-            document.cookie = `${cookie}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`
-            socket.send(JSON.stringify({
-                'type': 'user_disconnect',
-                'username': data['username']
-            }))
-            window.location.href = '/tests/delete_from_test'
+            if (data['username'] == document.getElementById('username').textContent){
+                let cookie = `quiz_${quizCode}`
+                document.cookie = `${cookie}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`
+                window.location.href = '/tests/delete_from_test'
+            }
         } else if(data['type'] == 'start_test'){
             $.ajax({
                 url: '/tests/get_question',
@@ -33,7 +31,7 @@ function workSocket(){
                     'question_number': data['question_number']
                 },
                 success: function(response){
-                   console.log(response)
+                   console.log(response.question)
                 }
             })
         }

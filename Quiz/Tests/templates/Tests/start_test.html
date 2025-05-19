@@ -12,6 +12,7 @@
     <input type="hidden" name="auth" value="{{ user.is_authenticated }}" id="auth">
     {% csrf_token %}
     {% if user.is_authenticated %}
+        <input type="hidden" name="" id="userId" value="{{ user.id }}">
         <h3 id="username">{{ user.username }}</h3>
     {% endif %}
     <h1 id="test_code">{{ test.code }}</h1>

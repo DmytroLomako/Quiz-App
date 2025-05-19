@@ -3,4 +3,4 @@ from .models import *
 
 
 # Register your models here.
-admin.site.register([Question, Test])
+admin.site.register([Question, Test, AnswerImage])
