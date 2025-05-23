@@ -15,6 +15,22 @@ function addOpacity(element, color){
     element.style.backgroundColor = `rgba(${r}, ${g}, ${b}, 0.75)`;
 }
 
+function updateImageAnswerInputs() {
+    let imageInputs = document.querySelectorAll('.answer-image');
+    imageInputs.forEach((input, index) => {
+        input.name = `answer-image_${index}`;
+    })
+}
+updateImageAnswerInputs();
+
+function updateImageHintInputs() {
+    let imageInputs = document.querySelectorAll('.hint-image');
+    imageInputs.forEach((input, index) => {
+        input.name = `hint-image_${index}`;
+    })
+}
+updateImageHintInputs();
+
 function deleteMatchDiv(event) {
     let matchDiv = event.currentTarget.closest('.match-div');
     let allMatchDivs = document.querySelectorAll('.match-div');
@@ -28,6 +44,9 @@ function deleteMatchDiv(event) {
             let color = matchColors[index];
             addOpacity(answerDiv, color)
         });
+
+        updateImageAnswerInputs();
+        updateImageHintInputs();
     } 
 }
 
@@ -55,6 +74,9 @@ function addMatchDiv() {
         let answersDiv = document.querySelector('.answers-div');
         let addButton = document.querySelector('.add-answer-button');
         answersDiv.insertBefore(newMatchDiv, addButton);
+
+        updateImageAnswerInputs();
+        updateImageHintInputs();
     } 
 }
 
@@ -67,3 +89,12 @@ let addButton = document.querySelector('.add-answer-button');
 if (addButton) {
     addButton.addEventListener('click', addMatchDiv);
 }
+
+let imageAnswerHintButtons = document.querySelectorAll('.image-answer-button, .image-hint-button');
+console.log(imageAnswerHintButtons.length)
+imageAnswerHintButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        let imageInput = button.nextElementSibling;
+        imageInput.click();
+    });
+})

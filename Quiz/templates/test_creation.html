@@ -21,12 +21,12 @@
         </select>
         <div class="header-saving-div">
             <select class="select-type" style="background-image: url({% static 'CreateTest/img/dropdown_arrow.png' %});">
-                <option value="1_points" selected>1 бал</option>
-                <option value="2_points">2 бали</option>
-                <option value="3_points">3 бали</option>
-                <option value="4_points">4 бали</option>
                 {% for i in range %}
-                    <option value="{{i}}_points">{{i}} балів</option>
+                    {% if i == 30 %}
+                        <option value="{{i}}_points" selected>{{i}} секунд</option>
+                    {% else %}
+                        <option value="{{i}}_points">{{i}} секунд</option>
+                    {% endif %}
                 {% endfor %}
             </select>
             <button class="save-question-button">

@@ -57,7 +57,7 @@ def render_multiple_choice(request, test_id):
                 answer_image.save()
                 
         return redirect(f'/create_quiz/test_info/{test_id}')
-    return render(request, 'CreateTest/multiple_choice.html', context={'test_id': test_id, 'range': range(5, 16)})
+    return render(request, 'CreateTest/multiple_choice.html', context={'test_id': test_id, 'range': range(10, 121, 10)})
 
 @login_required(login_url='/auth/')
 def render_fill_blank(request, test_id):
@@ -88,11 +88,50 @@ def render_fill_blank(request, test_id):
         question.save()
                         
         return redirect(f'/create_quiz/test_info/{test_id}')
-    return render(request, 'CreateTest/fill_blank.html', context={'test_id': test_id, 'range': range(5, 16)})
+    return render(request, 'CreateTest/fill_blank.html', context={'test_id': test_id, 'range': range(10, 121, 10)})
 
 @login_required(login_url='/auth/')
 def render_match(request, test_id):
-    return render(request, 'CreateTest/match.html', context={'test_id': test_id, 'range': range(5, 16)})
+    if request.method == 'POST':
+        test = Test.objects.get(id=test_id)
+        question_number = test.count_question() + 1
+        question_text = request.POST.get('question')
+        hints = request.POST.getlist('hint')
+        answers = request.POST.getlist('answer')
+        
+        question = Question.objects.create(
+            question_number = question_number,
+            question = question_text,
+            image = request.FILES.get('question_image') if 'question_image' in request.FILES else None,
+            answers = answers,
+            answer_type = 'match',
+            correct_answer = hints,
+            test = test
+        )
+        question.save()
+        
+        for i, hint in enumerate(hints):
+            hint_image_key = f'hint-image_{i}'
+            if hint_image_key in request.FILES:
+                hint_image = AnswerImage(
+                    image = request.FILES[hint_image_key],
+                    question = question,
+                    answer_id = f'hint_{i}'
+                )
+                hint_image.save()
+        
+        for i, answer in enumerate(answers):
+            answer_image_key = f'answer-image_{i}'
+            if answer_image_key in request.FILES:
+                answer_image = AnswerImage(
+                    image = request.FILES[answer_image_key],
+                    question = question,
+                    answer_id = f'answer_{i}'
+                )
+                answer_image.save()
+                
+        return redirect(f'/create_quiz/test_info/{test_id}')
+    return render(request, 'CreateTest/match.html', context={'test_id': test_id, 'range': range(10, 121, 10)})
     
 @login_required(login_url='/auth/')
 def render_library(request):
@@ -116,6 +155,6 @@ def render_library(request):
 def render_test_info(request, test_id):
     test = Test.objects.get(id=test_id)
     if test.user == request.user:
-        return render(request, 'CreateTest/test_info.html', context={'test': test, 'range': range(5, 16)})
+        return render(request, 'CreateTest/test_info.html', context={'test': test, 'range': range(10, 121, 10)})
     else:
         return redirect('/')
