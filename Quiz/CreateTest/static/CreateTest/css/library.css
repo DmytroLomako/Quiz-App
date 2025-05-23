@@ -1,6 +1,9 @@
 button:hover{
     cursor: pointer;
 }
+.menu .tests-link{
+    color: #1D4ED8;
+}
 .content{
     display: flex;
     flex-direction: column;
@@ -19,8 +22,15 @@ button:hover{
     background-color: white;
 }
 .logo-wrapper{
-    width: 70px;
+    min-width: 70px;
     height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.logo-wrapper img{
+    max-width: 100%;
+    max-height: 100%;
 }
 .test-info{
     display: flex;

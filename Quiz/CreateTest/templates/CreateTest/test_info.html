@@ -1,4 +1,5 @@
 {% load static %}
+{% load customtags %}
 
 <html lang="en">
 <head>
@@ -36,159 +37,84 @@
                 </a>
             </div>
         </div>
-        <div class="question-div">
-            <div class="question-actions">
-                <button class="button-drag"><img src="{% static 'CreateTest/img/dots.svg' %}" alt=""></button>
-                <button class="question-type">1. Множинний вибір</button>
-                <select class="select-type" style="background-image: url({% static 'CreateTest/img/dropdown_arrow.png' %});">
-                    {% for i in range %}
-                        {% if i == 30 %}
-                            <option value="{{i}}_points" selected>{{i}} секунд</option>
-                        {% else %}
-                            <option value="{{i}}_points">{{i}} секунд</option>
-                        {% endif %}
-                    {% endfor %}
-                </select>
-                <div class="question-div-buttons">
-                    <button class="edit-button"><img src="{% static 'CreateTest/img/edit.png' %}" alt="">Редагувати</button>
-                    <button class="delete-button"><img src="{% static 'CreateTest/img/trash.png' %}" alt=""></button>
+        {% for question in test.question_set.all %}
+            <div class="question-div">
+                <div class="question-actions">
+                    <button class="button-drag"><img src="{% static 'CreateTest/img/dots.svg' %}" alt=""></button>
+                    <button class="question-type">{{ question.question_number }}. {{ question.answer_type }}</button>
+                    <select class="select-type" style="background-image: url({% static 'CreateTest/img/dropdown_arrow.png' %});">
+                        {% for i in range %}
+                            {% if i == question.time %}
+                                <option value="{{i}}_points" selected>{{i}} секунд</option>
+                            {% else %}
+                                <option value="{{i}}_points">{{i}} секунд</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                    <div class="question-div-buttons">
+                        <button class="edit-button"><img src="{% static 'CreateTest/img/edit.png' %}" alt="">Редагувати</button>
+                        <button class="delete-button"><img src="{% static 'CreateTest/img/trash.png' %}" alt=""></button>
+                    </div>
                 </div>
-            </div>
-            <h3>Питання 1</h3>
-            <h4>Варіанти відповідей</h4>
-            <div class="question-answers-div">
-                <div class="question-answer">
-                    <img src="{% static 'CreateTest/img/cross.png' %}" alt="">
-                    <p>answer 1</p>
-                </div>
-                <div class="question-answer">
-                    <img src="{% static 'CreateTest/img/cross.png' %}" alt="">
-                    <p>answer 2</p>
-                </div>
-                <div class="question-answer">
-                    <img src="{% static 'CreateTest/img/checkmark.png' %}" alt="">
-                    <p>answer 3</p>
-                </div>
-                <div class="question-answer">
-                    <img src="{% static 'CreateTest/img/cross.png' %}" alt="">
-                    <p>answer 4</p>
-                </div>
-            </div>
-        </div>
-        <div class="question-div">
-            <div class="question-actions">
-                <button class="button-drag"><img src="{% static 'CreateTest/img/dots.svg' %}" alt=""></button>
-                <button class="question-type">2. Заповніть бланк</button>
-                <select class="select-type" style="background-image: url({% static 'CreateTest/img/dropdown_arrow.png' %});">
-                    {% for i in range %}
-                        {% if i == 30 %}
-                            <option value="{{i}}_points" selected>{{i}} секунд</option>
-                        {% else %}
-                            <option value="{{i}}_points">{{i}} секунд</option>
-                        {% endif %}
-                    {% endfor %}
-                </select>
-                <div class="question-div-buttons">
-                    <button class="edit-button"><img src="{% static 'CreateTest/img/edit.png' %}" alt="">Редагувати</button>
-                    <button class="delete-button"><img src="{% static 'CreateTest/img/trash.png' %}" alt=""></button>
-                </div>
-            </div>
-            <h3>Питання 2</h3>
-            <h4>Відповідь</h4>
-            <div class="blank-answer">
-                <img src="{% static 'CreateTest/img/checkmark.png' %}" alt="">
-                <p>answer 1</p> 
-            </div>
-            <hr>
-            <h4>Альтернативні відповіді</h4>
-            <div class="blank-alternate-answers">
-                <div class="blank-alternate-answer">
-                    <img src="{% static 'CreateTest/img/checkmark.png' %}" alt="">
-                    <p>answer 2</p> 
-                </div>
-                <div class="blank-alternate-answer">
-                    <img src="{% static 'CreateTest/img/checkmark.png' %}" alt="">
-                    <p>answer 3</p> 
-                </div>
-                <div class="blank-alternate-answer">
-                    <img src="{% static 'CreateTest/img/checkmark.png' %}" alt="">
-                    <p>answer 4</p> 
-                </div>
-            </div>
-        </div>
-        <div class="question-div">
-            <div class="question-actions">
-                <button class="button-drag"><img src="{% static 'CreateTest/img/dots.svg' %}" alt=""></button>
-                <button class="question-type">3. Поєднання</button>
-                <select class="select-type" style="background-image: url({% static 'CreateTest/img/dropdown_arrow.png' %});">
-                    {% for i in range %}
-                        {% if i == 30 %}
-                            <option value="{{i}}_points" selected>{{i}} секунд</option>
-                        {% else %}
-                            <option value="{{i}}_points">{{i}} секунд</option>
-                        {% endif %}
-                    {% endfor %}
-                </select>
-                <div class="question-div-buttons">
-                    <button class="edit-button"><img src="{% static 'CreateTest/img/edit.png' %}" alt="">Редагувати</button>
-                    <button class="delete-button"><img src="{% static 'CreateTest/img/trash.png' %}" alt=""></button>
-                </div>
-            </div>
-            <h3>Установіть відповідність між наступними варіантами</h3>
-            <h4>Варіанти відповідей</h4>
-            <div class="match-answers-div">
-                <div class="match-answer-div">
-                    <div class="match-prompt-div">
+                <h3>{{ question.question }}</h3>
+                {% if question.answer_type == 'multiple_choice' %}
+                    <h4>Варіанти відповідей</h4>
+                    <div class="question-answers-div">
+                        {% str_to_list question.answers as answers %}
+                        {% for answer in answers %}
+                            {% check_answer_correct answers answer question.correct_answer as correct %}
+                            {% if correct == 'true' %}
+                                <div class="question-answer">
+                                    <img src="{% static 'CreateTest/img/checkmark.png' %}" alt="">
+                                    <p>{{ answer }}</p>
+                                </div>
+                            {% else %}
+                                <div class="question-answer">
+                                    <img src="{% static 'CreateTest/img/cross.png' %}" alt="">
+                                    <p>{{ answer }}</p>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% elif question.answer_type == 'fill_blank' %}
+                    <h4>Відповідь</h4>
+                    <div class="blank-answer">
                         <img src="{% static 'CreateTest/img/checkmark.png' %}" alt="">
-                        <p>prompt 1</p> 
+                        <p>{{ question.correct_answer }}</p> 
                     </div>
-                    <div class="match-response-div">
-                        <img src="{% static 'CreateTest/img/long_arrow.png' %}" alt="">
-                        <p>response 1</p> 
+                    <hr>
+                    <h4>Альтернативні відповіді</h4>
+                    <div class="blank-alternate-answers">
+                        {% str_to_list question.answers as answers %}
+                        {% get_answers_from_list_dict answers as answers %}
+                        {% for answer in answers %}
+                            <div class="blank-alternate-answer">
+                                <img src="{% static 'CreateTest/img/checkmark.png' %}" alt="">
+                                <p>{{ answer }}</p> 
+                            </div>
+                        {% endfor %}
                     </div>
-                </div>
-                <div class="match-answer-div">
-                    <div class="match-prompt-div">
-                        <img src="{% static 'CreateTest/img/checkmark.png' %}" alt="">
-                        <p>prompt 2</p> 
+                {% elif question.answer_type == 'match' %}
+                    <h4>Варіанти відповідей</h4>
+                    {% str_to_list question.answers as answers %}
+                    {% str_to_list question.correct_answer as hints %}
+                    <div class="match-answers-div">
+                        {% for answer, hint in answers|zip_lists:hints %}
+                            <div class="match-answer-div">
+                                <div class="match-prompt-div">
+                                    <img src="{% static 'CreateTest/img/checkmark.png' %}" alt="">
+                                    <p>{{ hint }}</p> 
+                                </div>
+                                <div class="match-response-div">
+                                    <img src="{% static 'CreateTest/img/long_arrow.png' %}" alt="">
+                                    <p>{{ answer }}</p> 
+                                </div>
+                            </div>
+                        {% endfor %}
                     </div>
-                    <div class="match-response-div">
-                        <img src="{% static 'CreateTest/img/long_arrow.png' %}" alt="">
-                        <p>response 2</p> 
-                    </div>
-                </div>
-                <div class="match-answer-div">
-                    <div class="match-prompt-div">
-                        <img src="{% static 'CreateTest/img/checkmark.png' %}" alt="">
-                        <p>prompt 3</p> 
-                    </div>
-                    <div class="match-response-div">
-                        <img src="{% static 'CreateTest/img/long_arrow.png' %}" alt="">
-                        <p>response 3</p> 
-                    </div>
-                </div>
-                <div class="match-answer-div">
-                    <div class="match-prompt-div">
-                        <img src="{% static 'CreateTest/img/checkmark.png' %}" alt="">
-                        <p>prompt 4</p> 
-                    </div>
-                    <div class="match-response-div">
-                        <img src="{% static 'CreateTest/img/long_arrow.png' %}" alt="">
-                        <p>response 4</p> 
-                    </div>
-                </div>
-                <div class="match-answer-div">
-                    <div class="match-prompt-div">
-                        <img src="{% static 'CreateTest/img/checkmark.png' %}" alt="">
-                        <p>prompt 5</p> 
-                    </div>
-                    <div class="match-response-div">
-                        <img src="{% static 'CreateTest/img/long_arrow.png' %}" alt="">
-                        <p>response 5</p> 
-                    </div>
-                </div>
+                {% endif %}
             </div>
-        </div>
+        {% endfor %}
         <button class="add-button">
             <img src="{% static 'CreateTest/img/plus_blue.svg' %}" alt="">
             Додати питання

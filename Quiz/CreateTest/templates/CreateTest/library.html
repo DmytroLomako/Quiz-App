@@ -18,6 +18,8 @@
                 <div class="logo-wrapper">
                     {% if test.logo %}
                         <img src="{{ test.logo.url }}" alt="">
+                    {% else %}
+                        <img src="{% static 'CreateTest/img/test_logo.jpg' %}" alt="">
                     {% endif %}
                 </div>
                 <div class="test-info">
