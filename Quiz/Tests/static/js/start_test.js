@@ -21,7 +21,7 @@ function workSocket(){
                 document.cookie = `${cookie}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`
                 window.location.href = '/tests/delete_from_test'
             }
-        } else if(data['type'] == 'start_test'){
+        } else if(data['type'] == 'get_question'){
             $.ajax({
                 url: '/tests/get_question',
                 type: 'POST',
@@ -31,7 +31,57 @@ function workSocket(){
                     'question_number': data['question_number']
                 },
                 success: function(response){
-                   console.log(response.question)
+                    let data = response.question
+                    let questionDiv = document.querySelector('.question-block');
+                    let question = document.createElement('h2')
+                    question.textContent = data['question']
+                    questionDiv.append(question)
+                    if (data['answer_type'] === 'multiple_choice') {
+                        let answers = JSON.parse(data['answers'].replace(/'/g, '"'))
+                        let answersDiv = document.createElement('div')
+                        questionDiv.append(answersDiv)
+                        console.log(data)
+                        let countCorrectAnsers = data['correct_answer'].split('true').length - 1;
+                        for (let index = 0; index < answers.length; index++) {
+                            if (countCorrectAnsers > 1){
+                                answersDiv.innerHTML += `<div class='answer'><input type='checkbox'>${answers[index]}</div>`
+                            } else {
+                                answersDiv.innerHTML += `<div class='answer'>${answers[index]}</div>`
+                            }
+                        }
+                        if (countCorrectAnsers > 1){
+                            let buttonSubmit = document.createElement('button')
+                            buttonSubmit.textContent = 'Відправити'
+                            buttonSubmit.addEventListener('click', () => {
+                                let userAnswers = []
+                                answersDiv.querySelectorAll('input').forEach(function(input) {
+                                    userAnswers.push(input.checked)
+                                })
+                                socket.send(JSON.stringify({
+                                    'type': 'send_answer',
+                                    'username': document.getElementById('username').textContent,
+                                    'answer': userAnswers,
+                                    'question_id': data['id']
+                                }))
+                            })
+                            questionDiv.append(buttonSubmit)
+                        }
+                        answersDiv.querySelectorAll('.answer').forEach(function(answer) {
+                            answer.addEventListener('click', () => {
+                                answer.classList.toggle('active')
+                                if (countCorrectAnsers > 1){
+                                    answer.querySelector('input').checked = !answer.querySelector('input').checked
+                                } else {
+                                    socket.send(JSON.stringify({
+                                        'type': 'send_answer',
+                                        'username': document.getElementById('username').textContent,
+                                        'answer': answer.textContent,
+                                        'question_id': data['id']
+                                    }))
+                                }
+                            })
+                        })
+                    }
                 }
             })
         }

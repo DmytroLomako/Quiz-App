@@ -27,6 +27,14 @@ socket.onmessage = function(event){
                 user.parentElement.remove()
             }
         })
+    } else if(data['type'] == 'admin_user_answer'){
+        let username = data['username']
+        let users = usersDiv.querySelectorAll('b')
+        users.forEach(user => {
+            if(user.textContent == username){
+                user.parentElement.classList.add('answered')
+            }
+        })
     }
 }
 

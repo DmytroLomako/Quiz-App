@@ -4,8 +4,10 @@ from CreateTest.models import Test, Question
 
 # Create your models here.
 class Result(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    user_not_auth = models.TextField(default=None, null=True)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    start_test = models.ForeignKey('StartTest', on_delete=models.CASCADE, default=None)
     result = models.TextField()
 
     def __str__(self):
@@ -13,10 +15,16 @@ class Result(models.Model):
     
 class GlobalResult(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    results = models.ForeignKey(Result, on_delete=models.CASCADE)
+    results = models.TextField()
 
     def __str__(self):
         return f'{self.user.username} - {self.results}'
+    
+class AdminResult(models.Model):
+    admin = models.ForeignKey(User, on_delete=models.CASCADE)
+    results = models.TextField()
+    test = models.ForeignKey(Test, on_delete=models.CASCADE)
+    date = models.DateTimeField(auto_now_add=True)
     
 class StartTest(models.Model):
     admin = models.ForeignKey(User, on_delete=models.CASCADE)

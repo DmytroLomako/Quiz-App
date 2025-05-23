@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Початок тесту</title>
+    <link rel="stylesheet" href="{% static 'css/start_test.css' %}">
     <script src="{% static 'js/jquery.js' %}" defer></script>
     <script src="{% static 'js/start_test.js' %}" defer></script>
 </head>
@@ -17,5 +18,8 @@
     {% endif %}
     <h1 id="test_code">{{ test.code }}</h1>
     <button id="button-exit">Вийти з тесту</button>
+    <div class="question-block">
+
+    </div>
 </body>
 </html>

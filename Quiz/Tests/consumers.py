@@ -1,10 +1,9 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 import json
-from .models import StartTest
+from .models import *
 from asgiref.sync import sync_to_async
 from channels.db import database_sync_to_async
 from urllib.parse import parse_qs
-from .models import *
 from django.contrib.auth.models import User
 
 
@@ -30,20 +29,15 @@ class QuizConsumers(AsyncWebsocketConsumer):
             else:
                 username = params.get('name', '')
             socket_exist = params.get('socket_exist', False)
+            start_test = await self.get_test_admin(True)
             if not socket_exist:
                 try:
-                    start_test = await self.get_test_admin(True)
-                    print(self.quiz_code, start_test)
                     if start_test:
                         if self.user.is_authenticated:
-                            print('user_add')
                             await sync_to_async(start_test.users.add)(self.user)
                         else:
-                            print('user_not_auth_add')
                             start_test.users_not_auth += f'{username[0]}, '
-                        print("add")
                         await sync_to_async(start_test.save)()
-                        print('True')
                 except Exception as error:
                     print(error)
                 await self.channel_layer.group_send(
@@ -52,6 +46,23 @@ class QuizConsumers(AsyncWebsocketConsumer):
                         'type': 'user_connect',
                         'username': username,
                         'id': id
+                    }
+                )
+            if start_test.current_question != -1:
+                if id:
+                    self.user_group_name = f'user_{id}'
+                else:
+                    self.user_group_name = f'not_auth_user_{username}'
+                await self.channel_layer.group_add(
+                    self.user_group_name,
+                    self.channel_name
+                )
+                await self.channel_layer.group_send(
+                    self.user_group_name,
+                    {
+                        'type': 'get_question',
+                        'question_number': start_test.current_question,
+                        'test_id': start_test.id
                     }
                 )
             
@@ -77,7 +88,6 @@ class QuizConsumers(AsyncWebsocketConsumer):
         
     async def receive(self, text_data=None):
         text_data = json.loads(text_data)
-        print(text_data)
         if text_data['type'] == 'user_disconnect':
             try:
                 start_test = await self.get_test_admin(True)
@@ -129,9 +139,37 @@ class QuizConsumers(AsyncWebsocketConsumer):
             await self.channel_layer.group_send(
                 self.quiz_group_name,
                 {
-                    'type': 'start_test',
+                    'type': 'get_question',
                     'question_number': start_test.current_question,
                     'test_id': start_test.id
+                }
+            )
+        elif text_data['type'] == 'send_answer':
+            id = None
+            question = await sync_to_async(Question.objects.filter(id=text_data['question_id']).first)()
+            start_test = await self.get_test_admin(True)
+            if self.user.is_authenticated:
+                id = self.user.id
+                result = await sync_to_async(Result.objects.create)(
+                    user = self.user,
+                    result = text_data['answer'],
+                    question = question,
+                    start_test = start_test
+                )
+            else:
+                result = await sync_to_async(Result.objects.create)(
+                    user_not_auth = text_data['username'],
+                    result = text_data['answer'],
+                    question = question,
+                    start_test = start_test
+                )
+            await sync_to_async(result.save)()
+            await self.channel_layer.group_send(
+                self.quiz_group_name,
+                {
+                    'type': 'admin_user_answer',
+                    'user_id': id,
+                    'username': text_data['username']
                 }
             )
                 
@@ -142,9 +180,16 @@ class QuizConsumers(AsyncWebsocketConsumer):
             'receiver': event['receiver']
         }))
         
-    async def start_test(self, event):
+    async def get_question(self, event):
         await self.send(text_data=json.dumps({
-            'type': 'start_test',
+            'type': 'get_question',
             'question_number': event['question_number'],
             'test_id': event['test_id']
+        }))
+        
+    async def admin_user_answer(self, event):
+        await self.send(text_data=json.dumps({
+            'type': 'admin_user_answer',
+            'user_id': event['user_id'],
+            'username': event['username'],
         }))
