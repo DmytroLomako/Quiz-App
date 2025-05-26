@@ -3,3 +3,18 @@
     border: 1px solid blueviolet;
     cursor: pointer;
 }
+.cover{
+    height: 100%;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 2;
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-size: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    user-select: none;
+}

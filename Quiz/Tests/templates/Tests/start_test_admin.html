@@ -12,15 +12,18 @@
     <h1 id="test_code">{{ test.code }}</h1>
     <button id="startTest">Почати тест</button>
     <div class="users">
-        {% for user in auth_users %}
-            <p>
+        {% for correct, user in auth_users %}
+            <p {% if correct %} class="answered" {% endif %}>
                 <input type="hidden" class="userId" value="{{ user.id }}">
                 <b>{{ user }}</b> 
                 <button class="delete-user">×</button>
             </p>
         {% endfor %}
-        {% for user in not_auth_users %}
-            <p><b>{{ user }}</b> <button class="delete-user">×</button></p>
+        {% for correct, user in not_auth_users %}
+            <p {% if correct %} class="answered" {% endif %}>
+                <b>{{ user }}</b> 
+                <button class="delete-user">×</button>
+            </p>
         {% endfor %}
     </div>
 

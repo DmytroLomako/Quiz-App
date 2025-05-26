@@ -52,7 +52,24 @@ buttonSave.addEventListener('click', function(event){
 })
 
 let imageQuestionButton = document.querySelector('.image-question-button');
+let imageInput = document.querySelector('.image-question-button').nextElementSibling;
 imageQuestionButton.addEventListener('click', () => {
-    let imageInput = imageQuestionButton.nextElementSibling;
     imageInput.click();
+});
+
+imageInput.addEventListener('change', function() {
+    if (this.files) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            let questionImage = document.querySelector('#question-image');
+            let imgElement = questionImage.querySelector('img');
+            if (!imgElement) {
+                imgElement = document.createElement('img');
+                questionImage.appendChild(imgElement);
+            }
+            imgElement.src = e.target.result;
+            questionImage.style.display = 'flex'
+        };
+        reader.readAsDataURL(this.files[0]);
+    }
 });

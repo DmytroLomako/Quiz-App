@@ -18,7 +18,7 @@
         <h3>Створити нове питання</h3>
     </header>
     <main>
-        <a href="/">
+        <a href="{% url 'multiple_choice' test_id %}">
             <div class="cards">
                 <h1>Множинний вибір</h1>
                 <img src="{% static 'CreateTest/img/multiple_choice.png' %}" alt="">
@@ -27,7 +27,7 @@
                 </div>
             </div>
         </a>
-        <a href="/">
+        <a href="{% url 'fill_blank' test_id %}">
             <div class="cards">
                 <h1>Заповніть бланк</h1>
                 <img src="{% static 'CreateTest/img/fill_blank.png' %}" alt="">
@@ -36,7 +36,7 @@
                 </div>
             </div>
         </a>
-        <a href="/">
+        <a href="{% url 'match' test_id %}">
             <div class="cards">
                 <h1>Поєднання</h1>
                 <img src="{% static 'CreateTest/img/match.png' %}" alt="">

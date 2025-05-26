@@ -11,6 +11,13 @@ for (let index = 0; index < cookies.length; index++) {
     }
 }
 
+function coverQuestion() {
+    let coverDiv = document.createElement('div')
+    coverDiv.classList.add('cover')
+    coverDiv.innerHTML = `Ви відповіли,<br>Зачекайте відповіді інших`
+    document.body.append(coverDiv)
+}
+
 function workSocket(){
     socket = new WebSocket(socketUrl)
     socket.onmessage = function(event){
@@ -28,15 +35,20 @@ function workSocket(){
                 data: {
                     'csrfmiddlewaretoken': document.querySelector('[name=csrfmiddlewaretoken]').value,
                     'test_id': data['test_id'],
-                    'question_number': data['question_number']
+                    'question_number': data['question_number'],
+                    'username': document.getElementById('username').textContent
                 },
                 success: function(response){
+                    console.log(response)
                     let data = response.question
                     let questionDiv = document.querySelector('.question-block');
                     let question = document.createElement('h2')
                     question.textContent = data['question']
                     questionDiv.append(question)
                     if (data['answer_type'] === 'multiple_choice') {
+                        if (response.user_result){
+                            coverQuestion()
+                        }
                         let answers = JSON.parse(data['answers'].replace(/'/g, '"'))
                         let answersDiv = document.createElement('div')
                         questionDiv.append(answersDiv)
@@ -52,7 +64,7 @@ function workSocket(){
                         if (countCorrectAnsers > 1){
                             let buttonSubmit = document.createElement('button')
                             buttonSubmit.textContent = 'Відправити'
-                            buttonSubmit.addEventListener('click', () => {
+                            function buttonClickHandler() {
                                 let userAnswers = []
                                 answersDiv.querySelectorAll('input').forEach(function(input) {
                                     userAnswers.push(input.checked)
@@ -63,11 +75,24 @@ function workSocket(){
                                     'answer': userAnswers,
                                     'question_id': data['id']
                                 }))
-                            })
+                                buttonSubmit.removeEventListener('click', buttonClickHandler)
+                                coverQuestion();
+                            }
+                            if (!response.user_result){
+                                buttonSubmit.addEventListener('click', buttonClickHandler)
+                            } else {
+                                let results = response.user_result.result.split(',')
+                                results.forEach(function(result, index) {
+                                    console.log(result.indexOf('True'))
+                                    if (result.indexOf('True') != -1){
+                                        answersDiv.querySelectorAll('input')[index].checked = true
+                                    }
+                                })
+                            }
                             questionDiv.append(buttonSubmit)
                         }
                         answersDiv.querySelectorAll('.answer').forEach(function(answer) {
-                            answer.addEventListener('click', () => {
+                            function singleButtonHandler(){
                                 answer.classList.toggle('active')
                                 if (countCorrectAnsers > 1){
                                     answer.querySelector('input').checked = !answer.querySelector('input').checked
@@ -78,9 +103,35 @@ function workSocket(){
                                         'answer': answer.textContent,
                                         'question_id': data['id']
                                     }))
+                                    answer.removeEventListener('click', singleButtonHandler)
+                                    coverQuestion();
                                 }
-                            })
-                        })
+                            }
+                            answer.addEventListener('click', singleButtonHandler)
+                        }) 
+                    } else if (data['answer_type'] === 'fill_blank') {
+                        let input = document.createElement('input')
+                        input.classList.add('fill_blank_input')
+                        questionDiv.append(input)
+                        let buttonSubmit = document.createElement('button')
+                        buttonSubmit.textContent = 'Відправити'
+                        questionDiv.append(buttonSubmit)
+                        if (response['user_result']){
+                            input.value = response['user_result']['result']
+                            coverQuestion()
+                        } else {
+                            function buttonClickHandler() {
+                                socket.send(JSON.stringify({
+                                    'type': 'send_answer',
+                                    'username': document.getElementById('username').textContent,
+                                    'answer': input.value,
+                                    'question_id': data['id']
+                                }))
+                                buttonSubmit.removeEventListener('click', buttonClickHandler)
+                                coverQuestion();
+                            }
+                            buttonSubmit.addEventListener('click', buttonClickHandler)
+                        }
                     }
                 }
             })

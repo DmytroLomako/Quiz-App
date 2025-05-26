@@ -11,7 +11,9 @@ class Result(models.Model):
     result = models.TextField()
 
     def __str__(self):
-        return f'{self.user.username} - {self.test.name} - {self.result}'
+        if self.user:
+            return f'{self.user.username} - {self.start_test.test.name} - {self.result}'
+        return f'{self.user_not_auth} - {self.start_test.test.name} - {self.result}'
     
 class GlobalResult(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
