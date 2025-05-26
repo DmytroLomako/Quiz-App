@@ -31,6 +31,13 @@ let questionImageDiv = document.querySelector('.question-image-div')
 let questionDiv = document.querySelector('.question-div')
 let autoExpandingDiv = document.querySelector('.auto-expanding-div')
 let questionInput = document.getElementById('questionInput')
+
+let questionIdInput = document.getElementById('questionIdInput');
+if (questionIdInput) {
+    let questionInput = autoExpandingDiv.nextElementSibling;
+    autoExpandingDiv.textContent = questionInput.value;
+}
+
 questionDiv.addEventListener('click', function(event) {
     autoExpandingDiv.focus();
 })

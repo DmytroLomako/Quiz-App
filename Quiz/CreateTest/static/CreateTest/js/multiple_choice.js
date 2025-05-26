@@ -2,6 +2,18 @@ let autoExpandingAnswerDivs = document.querySelectorAll('.auto-expanding-answer-
 let answerInputs = document.querySelectorAll('.answer-input');
 let answerTextDivs = document.querySelectorAll('.answer-text-div');
 const answerColors = ['#EFA929', '#29BDEF', '#8529EF', '#EF7229', '#3AAB23']
+let allAnswerDivs = document.querySelectorAll('.answer-div');
+// let questionIdInput = document.getElementById('questionIdInput');
+if (questionIdInput) {
+    autoExpandingAnswerDivs.forEach((div) => {
+        let input = div.nextElementSibling;
+        div.textContent = input.value;
+    })
+}
+
+allAnswerDivs.forEach((div, index) => {
+    div.style.backgroundColor = answerColors[index];
+})
 
 function addAnswerEvent(div) {
     div.style.maxWidth = window.getComputedStyle(div).width;
@@ -31,6 +43,7 @@ answerTextDivs.forEach((div) => {
 let checkboxes = document.querySelectorAll('.checkbox');
 
 checkboxes.forEach((checkbox) => {
+    console.log(checkbox.classList.contains('checked'), checkbox.classList)
     if (!checkbox.classList.contains('checked') && !checkbox.classList.contains('unchecked')) {
         checkbox.classList.add('unchecked');
     }

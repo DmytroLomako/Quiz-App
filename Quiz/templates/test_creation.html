@@ -38,27 +38,48 @@
     <main>
         <form method="post" enctype="multipart/form-data" class="test-creation-window">
             {% csrf_token %}
+            {% if question %}
+                <input type="hidden" id="questionIdInput" name="question_id">
+            {% endif %}
             <input type="hidden" id="timeInput" name="time">
             <div class="question-image-main-div">
-                <div id="question-image" style="display: none;">
-                    <div class="question-image-actions" style="display: none;">
-                        <div>
-                            <button type="button" class="image-question-button"><img src="{% static 'CreateTest/img/picture.png' %}" alt=""></button>
-                            <button type="button" class="delete-image-button"><img src="{% static 'CreateTest/img/trash.png' %}" alt=""></button>
+                {% if question.image %}
+                    <div id="question-image" style="display: flex;">
+                        <div class="question-image-actions" style="display: none;">
+                            <div>
+                                <button type="button" class="image-question-button"><img src="{% static 'CreateTest/img/picture.png' %}" alt=""></button>
+                                <button type="button" class="delete-image-button"><img src="{% static 'CreateTest/img/trash.png' %}" alt=""></button>
+                            </div>
                         </div>
+                        <img src="{{ question.image.url }}" class="img" alt="">
                     </div>
-                    <img src="{% static 'CreateTest/img/picture.png' %}" class="img" alt="">
-                </div>
-                <div class="question-image-div">
-                    <div class="image-icon-div">
+                    <div class="question-image-div">
+                        <div class="image-icon-div" style="display: none;">
                         <button type="button" class="image-question-button">
                             <img src="{% static 'CreateTest/img/picture.png' %}" alt="">
                         </button>
-                        <input type="file" name="question_image" class="question_image" accept="image/*" style="display: none;">
+                        <input type="file" name="question_image" class="question_image" value="question.image" accept="image/*" style="display: none;">
+                {% else %}
+                    <div id="question-image" style="display: none;">
+                        <div class="question-image-actions" style="display: none;">
+                            <div>
+                                <button type="button" class="image-question-button"><img src="{% static 'CreateTest/img/picture.png' %}" alt=""></button>
+                                <button type="button" class="delete-image-button"><img src="{% static 'CreateTest/img/trash.png' %}" alt=""></button>
+                            </div>
+                        </div>
+                        <img src="{% static 'CreateTest/img/picture.png' %}" class="img" alt="">
+                    </div>
+                    <div class="question-image-div">
+                        <div class="image-icon-div">
+                            <button type="button" class="image-question-button">
+                                <img src="{% static 'CreateTest/img/picture.png' %}" alt="">
+                            </button>
+                            <input type="file" name="question_image" class="question_image" accept="image/*" style="display: none;">
+                {% endif %}
                     </div>
                     <div class="question-div">
                         <div class="auto-expanding-div" contenteditable="true" placeholder="Введіть питання"></div>
-                        <input type="hidden" name="question" id="questionInput">
+                        <input type="hidden" name="question" id="questionInput" {% if question %} value="{{ question.question }}" {% endif %}>
                     </div>
                 </div>
             </div>

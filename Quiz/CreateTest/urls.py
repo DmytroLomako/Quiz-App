@@ -8,5 +8,6 @@ urlpatterns = [
     path('fill_in_the_blank/<int:test_id>/', render_fill_blank, name = 'fill_blank'),
     path('match/<int:test_id>/', render_match, name = 'match'),
     path('library/', render_library, name='library'),
-    path('test_info/<int:test_id>/', render_test_info, name='test_info')
+    path('test_info/<int:test_id>/', render_test_info, name='test_info'),
+    path('edit/<int:test_id>/question/<int:question_id>/<str:question_type>', render_edit_test, name='edit_test')
 ]

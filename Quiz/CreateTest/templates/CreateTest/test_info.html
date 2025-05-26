@@ -26,8 +26,7 @@
     </header>
     <main>
         <div class="test-info">
-            <h1>3 питання</h1>
-            <h2>(3 бали)</h2>
+            <h1>{{ test.count_question }} питання</h1>
             <div class="add-button-div">
                 <a href="{% url 'select_question' test.id %}">
                     <button class="add-button">
@@ -52,7 +51,7 @@
                         {% endfor %}
                     </select>
                     <div class="question-div-buttons">
-                        <button class="edit-button"><img src="{% static 'CreateTest/img/edit.png' %}" alt="">Редагувати</button>
+                        <a href="/create_quiz/edit/{{ test.id }}/question/{{ question.id }}/{{ question.answer_type }}"><button class="edit-button"><img src="{% static 'CreateTest/img/edit.png' %}" alt="">Редагувати</button></a>
                         <button class="delete-button"><img src="{% static 'CreateTest/img/trash.png' %}" alt=""></button>
                     </div>
                 </div>

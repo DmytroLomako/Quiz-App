@@ -164,3 +164,17 @@ def render_test_info(request, test_id):
         return render(request, 'CreateTest/test_info.html', context={'test': test, 'range': range(10, 121, 10)})
     else:
         return redirect('/')
+    
+@login_required(login_url='/auth/')
+def render_edit_test(request, test_id, question_id, question_type):
+    test = Test.objects.get(id=test_id)
+    if test.user == request.user:
+        question = Question.objects.get(id=question_id)
+        if question:
+            if question_type == 'multiple_choice':
+                return render(request, 'CreateTest/multiple_choice.html', context={'test': test, 'question': question, 'range': range(10, 121, 10)})
+            elif question_type == 'fill_blank':
+                return render(request, 'CreateTest/fill_blank.html', context={'test': test, 'question': question, 'range': range(10, 121, 10)})
+            elif question_type == 'match':
+                return render(request, 'CreateTest/match.html', context={'test': test, 'question': question, 'range': range(10, 121, 10)})
+    return redirect('/')
