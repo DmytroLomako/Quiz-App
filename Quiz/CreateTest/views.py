@@ -30,6 +30,8 @@ def render_select_question(request, test_id):
 def render_multiple_choice(request, test_id):
     if request.method == 'POST':
         test = Test.objects.get(id=test_id)
+        time = request.POST.get('time')
+        time = int(time.split('_')[0])
         question_number = test.count_question() + 1
         question_text = request.POST.get('question')
         list_answers = request.POST.getlist('answer')
@@ -63,6 +65,8 @@ def render_multiple_choice(request, test_id):
 def render_fill_blank(request, test_id):
     if request.method == 'POST':
         test = Test.objects.get(id=test_id)
+        time = request.POST.get('time')
+        time = int(time.split('_')[0])
         question_number = test.count_question() + 1
         question_text = request.POST.get('question')
         answer = request.POST.get('correct_answer')
@@ -94,6 +98,8 @@ def render_fill_blank(request, test_id):
 def render_match(request, test_id):
     if request.method == 'POST':
         test = Test.objects.get(id=test_id)
+        time = request.POST.get('time')
+        time = int(time.split('_')[0])
         question_number = test.count_question() + 1
         question_text = request.POST.get('question')
         hints = request.POST.getlist('hint')

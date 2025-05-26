@@ -48,28 +48,56 @@ let buttonSave = document.querySelector('.save-question-button')
 let form = document.querySelector('.test-creation-window')
 buttonSave.addEventListener('click', function(event){
     event.preventDefault()
+    let timeSelect = document.getElementById('timeSelect')
+    let time = timeSelect.options[timeSelect.selectedIndex].value
+    let timeInput = document.getElementById('timeInput')
+    timeInput.value = time
     form.submit();
 })
 
-let imageQuestionButton = document.querySelector('.image-question-button');
-let imageInput = document.querySelector('.image-question-button').nextElementSibling;
-imageQuestionButton.addEventListener('click', () => {
-    imageInput.click();
+let imageQuestionButtons = document.querySelectorAll('.image-question-button');
+let imageInput = document.querySelector('.question_image')
+imageQuestionButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+        imageInput.click();
+    });
 });
+
+let questionImage = document.querySelector('#question-image');
+questionImage.addEventListener('mouseenter', function() {
+    console.log('hover')
+    questionImage.querySelector('.question-image-actions').style.display = 'flex';
+})
+questionImage.addEventListener('mouseleave', function() {
+    questionImage.querySelector('.question-image-actions').style.display = 'none';
+})
+let imageIconDiv = document.querySelector('.image-icon-div');
 
 imageInput.addEventListener('change', function() {
     if (this.files) {
         const reader = new FileReader();
         reader.onload = function(e) {
-            let questionImage = document.querySelector('#question-image');
-            let imgElement = questionImage.querySelector('img');
+            let imgElement = questionImage.querySelector('.img');
             if (!imgElement) {
                 imgElement = document.createElement('img');
+                imgElement.classList.add('img');
                 questionImage.appendChild(imgElement);
             }
+            imageIconDiv.style.display = 'none';
             imgElement.src = e.target.result;
             questionImage.style.display = 'flex'
         };
         reader.readAsDataURL(this.files[0]);
     }
+});
+
+let deleteImageButton = document.querySelector('.delete-image-button');
+deleteImageButton.addEventListener('click', function() {
+    let imgElement = questionImage.querySelector('.img');
+    if (imgElement) {
+        imgElement.remove();
+        questionImage.style.display = 'none'
+        imageIconDiv.style.display = 'flex';
+    }
+    imageInput.value = '';
 });
