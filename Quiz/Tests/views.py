@@ -9,7 +9,9 @@ def render_start_test(request, code):
     if test:
         if request.user.is_authenticated:
             if request.user == test.admin:
-                list_not_auth_users = test.users_not_auth.split(', ')[:-1]
+                list_not_auth_users = []
+                if test.users_not_auth:
+                    list_not_auth_users = test.users_not_auth.split('%,')[:-1]
                 list_users = list(test.users.all())
                 current_question = test.current_question
                 question = Question.objects.filter(test=test.test, question_number=current_question).first()
@@ -24,8 +26,13 @@ def render_start_test(request, code):
                     for result in results:
                         if result.user_not_auth == user:
                             list_not_auth_users[index] = [True, user]
-                print(list_not_auth_users, list_users)
-                return render(request, 'Tests/start_test_admin.html', context={'test': test, 'not_auth_users': list_not_auth_users, 'auth_users': list_users})
+                count_question = test.count_question()
+                return render(request, 'Tests/start_test_admin.html', context={
+                    'test': test, 
+                    'not_auth_users': list_not_auth_users, 
+                    'auth_users': list_users,
+                    'last_question': count_question -1 <= test.current_question
+                })
         return render(request, 'Tests/start_test.html', context={'test': test, 'user': request.user})
     else:
         return redirect('/')
@@ -44,7 +51,6 @@ def get_question(request):
             if question:
                 question_data = model_to_dict(question)
                 question_data['image'] = question_data['image'].url
-                print(question_data)
                 result = None
                 if request.user.is_authenticated:
                     result = Result.objects.filter(start_test=start_test, question=question, user=request.user).first()
@@ -52,7 +58,7 @@ def get_question(request):
                     result = Result.objects.filter(start_test=start_test, question=question, user_not_auth=request.POST.get('username')).first()
                 if result != None:
                     result = model_to_dict(result)
-                return JsonResponse({'question': question_data, "user_result": result})
+                return JsonResponse({'question': question_data, "user_result": result, 'question_finished': start_test.question_finished})
         return JsonResponse({'question': None})
     
 def render_join(request):

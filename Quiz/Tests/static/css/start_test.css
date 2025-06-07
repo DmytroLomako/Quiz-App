@@ -18,3 +18,9 @@
     text-align: center;
     user-select: none;
 }
+.correct{
+    border: 2px solid green;
+}
+.incorrect{
+    border: 2px solid red;
+}

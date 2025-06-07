@@ -14,6 +14,13 @@ class Test(models.Model):
     def count_question(self):
         return len(Question.objects.filter(test=self))
     
+    def show_count_question(self):
+        count = self.count_question()
+        if str(count)[-1] in '1234':
+            return f'{count} питання'
+        else:
+            return f'{count} питань'
+    
 class Question(models.Model):
     question_number = models.IntegerField(default=0)
     question = models.CharField(max_length=255)

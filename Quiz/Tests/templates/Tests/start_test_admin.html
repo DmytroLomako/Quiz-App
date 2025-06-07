@@ -26,6 +26,17 @@
             </p>
         {% endfor %}
     </div>
-
+    <input type="hidden" name="" id="lastQuestion" value="{{ last_question }}">
+    {% if test.current_question != -1 %}
+        {% if test.question_finished %}
+            {% if last_question %}
+                <button class="stop-test-button">Завершити тест</button>
+            {% else %}
+                <button class="next-question-button">Наступне питання</button>
+            {% endif %}
+        {% else %}
+            <button class="stop-question-button">Зупинити питання</button>
+        {% endif %}
+    {% endif %}
 </body>
 </html>

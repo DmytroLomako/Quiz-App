@@ -5,6 +5,9 @@ let startTest = document.getElementById('startTest')
 
 const socket = new WebSocket(socketUrl)
 
+let lastQuestion = document.querySelector('#lastQuestion').value == 'True'
+console.log(lastQuestion)
+
 socket.onmessage = function(event){
     let data = JSON.parse(event.data)
     console.log('received', data)
@@ -28,6 +31,10 @@ socket.onmessage = function(event){
             }
         })
     } else if(data['type'] == 'admin_user_answer'){
+        console.log('')
+        if (data['not_answer_count'] == 0){
+            toggleStopQuestion(document.querySelector('.stop-question-button'))
+        }
         let username = data['username']
         let users = usersDiv.querySelectorAll('b')
         users.forEach(user => {
@@ -35,6 +42,16 @@ socket.onmessage = function(event){
                 user.parentElement.classList.add('answered')
             }
         })
+    } else if(data['type'] == 'get_question'){
+        let usernames = usersDiv.querySelectorAll('b')
+        usernames.forEach(user => {
+            user.parentElement.classList.remove('answered')
+        })
+        console.log(data['last_question'])
+        if (data['last_question']){
+            lastQuestion = true
+        }
+        console.log(lastQuestion)
     }
 }
 
@@ -56,8 +73,65 @@ function deleteUser (event){
     event.target.parentElement.remove()
 }
 
+function toggleStopQuestion(button, send=true){
+    button.remove()
+    let nextButton = document.createElement('button')
+    if (lastQuestion){
+        nextButton.textContent = 'Завершити тест'
+        nextButton.classList.add('stop-test-button')
+        nextButton.addEventListener('click', sendStop)
+    } else {
+        nextButton.textContent = 'Наступне питання'
+        nextButton.classList.add('next-question-button')
+        nextButton.addEventListener('click', () => {sendNext(nextButton)})
+    }
+    document.body.append(nextButton)
+    if (send){
+        socket.send(JSON.stringify({
+            'type': 'stop_question'
+        }))
+    }
+}
+
+function sendStop(){
+    socket.send(JSON.stringify({
+        'type': 'stop_test'
+    }))
+}
+
 startTest.addEventListener('click', () => {
     socket.send(JSON.stringify({
         'type': 'start_test'
     }))
+    let buttonStop = document.createElement('button')
+    buttonStop.textContent = 'Зупинити питання'
+    buttonStop.classList.add('stop-question-button')
+    document.body.append(buttonStop)
+    buttonStop.addEventListener('click', () => {toggleStopQuestion(buttonStop)})
 })
+
+let buttonStop = document.querySelector('.stop-question-button')
+if (buttonStop) {
+    buttonStop.addEventListener('click', () => {toggleStopQuestion(buttonStop)})
+}
+
+let buttonNext = document.querySelector('.next-question-button')
+function sendNext(nextButton){
+    nextButton.remove()
+    let buttonStop = document.createElement('button')
+    buttonStop.textContent = 'Зупинити питання'
+    buttonStop.classList.add('stop-question-button')
+    document.body.append(buttonStop)
+    buttonStop.addEventListener('click', () => {toggleStopQuestion(buttonStop)})
+    socket.send(JSON.stringify({
+        'type': 'next_question'
+    }))
+}
+if (buttonNext){
+    buttonNext.addEventListener('click', () => {sendNext(buttonNext)})
+}
+
+let buttonStopTest = document.querySelector('.stop-test-button')
+if (buttonStopTest){
+    buttonStopTest.addEventListener('click', sendStop)
+}

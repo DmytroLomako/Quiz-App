@@ -36,14 +36,15 @@ class QuizConsumers(AsyncWebsocketConsumer):
                         if self.user.is_authenticated:
                             await sync_to_async(start_test.users.add)(self.user)
                         else:
-                            start_test.users_not_auth += f'{username[0]}, '
+                            start_test.users_not_auth += f'{username[0]}%,'
                         await sync_to_async(start_test.save)()
                 except Exception as error:
                     print(error)
                 await self.channel_layer.group_send(
                     self.quiz_group_name,
                     {
-                        'type': 'user_connect',
+                        'type': 'send_data',
+                        'data_type': 'user_connect',
                         'username': username,
                         'id': id
                     }
@@ -57,12 +58,15 @@ class QuizConsumers(AsyncWebsocketConsumer):
                     self.user_group_name,
                     self.channel_name
                 )
+                count_question = await sync_to_async(start_test.count_question)()
                 await self.channel_layer.group_send(
                     self.user_group_name,
                     {
-                        'type': 'get_question',
+                        'type': 'send_data',
+                        'data_type': 'get_question',
                         'question_number': start_test.current_question,
-                        'test_id': start_test.id
+                        'test_id': start_test.id,
+                        'last_question': start_test.current_question == count_question - 1
                     }
                 )
             
@@ -87,6 +91,23 @@ class QuizConsumers(AsyncWebsocketConsumer):
         }))
         
     async def receive(self, text_data=None):
+        async def stop_question():
+            start_test = await self.get_test_admin(True)
+            start_test.question_finished = True
+            await sync_to_async(start_test.save)()
+            test = await sync_to_async(getattr)(start_test, 'test')
+            question = await sync_to_async(Question.objects.filter(test=test, question_number=start_test.current_question).first)()
+            if question:
+                await self.channel_layer.group_send(
+                    self.quiz_group_name,
+                    {
+                        'type': 'send_data',
+                        'data_type': 'check_correct',
+                        'question_type': question.answer_type,
+                        'answer': question.answers,
+                        'correct_answer': question.correct_answer 
+                    }
+                )
         text_data = json.loads(text_data)
         if text_data['type'] == 'user_disconnect':
             try:
@@ -94,16 +115,17 @@ class QuizConsumers(AsyncWebsocketConsumer):
                 if self.user.is_authenticated:
                     await sync_to_async(start_test.users.remove)(self.user)
                 else:
-                    usernames = start_test.users_not_auth.split(', ')
+                    usernames = start_test.users_not_auth.split('%,')
                     for name in usernames[:-1]:
                         if name == text_data['username']:
                             usernames.remove(name)
-                    start_test.users_not_auth = ', '.join(usernames)
+                    start_test.users_not_auth = '%,'.join(usernames)
                 await sync_to_async(start_test.save)()
                 await self.channel_layer.group_send(
                     self.quiz_group_name,
                     {
-                        'type': 'user_disconnect',
+                        'type': 'send_data',
+                        'data_type': 'user_disconnect',
                         'username': text_data['username'],
                         'receiver': 'admin'
                     }
@@ -118,34 +140,38 @@ class QuizConsumers(AsyncWebsocketConsumer):
                 user = await sync_to_async(User.objects.get)(id=int(user_id))
                 await sync_to_async(start_test.users.remove)(user)
             else:
-                usernames = start_test.users_not_auth.split(', ')
+                usernames = start_test.users_not_auth.split('%,')
                 for name in usernames[:-1]:
                     if name == username:
                         usernames.remove(name)
-                start_test.users_not_auth = ', '.join(usernames)
+                start_test.users_not_auth = '%,'.join(usernames)
             await sync_to_async(start_test.save)()
             await self.channel_layer.group_send(
                 self.quiz_group_name,
                 {
-                    'type': 'user_disconnect',
+                    'type': 'send_data',
+                    'data_type': 'user_disconnect',
                     'username': username,
                     'receiver': 'user'
                 }
             )
-        elif text_data['type'] == 'start_test':
+        elif text_data['type'] == 'start_test' or text_data['type'] == 'next_question':
             start_test = await self.get_test_admin(True)
-            start_test.current_question = 0
+            start_test.current_question += 1
+            start_test.question_finished = False
             await sync_to_async(start_test.save)()
+            count_question = await sync_to_async(start_test.count_question)()
             await self.channel_layer.group_send(
                 self.quiz_group_name,
                 {
-                    'type': 'get_question',
+                    'type': 'send_data',
+                    'data_type': 'get_question',
                     'question_number': start_test.current_question,
-                    'test_id': start_test.id
+                    'test_id': start_test.id,
+                    'last_question': count_question -1 <= start_test.current_question
                 }
             )
         elif text_data['type'] == 'send_answer':
-            print('send_answer')
             id = None
             result = None
             question = await sync_to_async(Question.objects.filter(id=text_data['question_id']).first)()
@@ -171,32 +197,40 @@ class QuizConsumers(AsyncWebsocketConsumer):
                     )
             if result != None:
                 await sync_to_async(result.save)()
+                results = await sync_to_async(Result.objects.filter(start_test=start_test, question=question).count)()
+                count_users = await sync_to_async(start_test.users.count)()
+                if start_test.users_not_auth:
+                    count_users += len(start_test.users_not_auth.split('%,')) - 1
+                if count_users == results:
+                    await stop_question()
                 await self.channel_layer.group_send(
                     self.quiz_group_name,
                     {
-                        'type': 'admin_user_answer',
+                        'type': 'send_data',
+                        'data_type': 'admin_user_answer',
                         'user_id': id,
-                        'username': text_data['username']
+                        'username': text_data['username'],
+                        'not_answer_count': count_users - results
                     }
                 )
-                
-    async def user_disconnect(self, event):
-        await self.send(text_data=json.dumps({
-            'type': 'user_disconnect',
-            'username': event['username'],
-            'receiver': event['receiver']
-        }))
-        
-    async def get_question(self, event):
-        await self.send(text_data=json.dumps({
-            'type': 'get_question',
-            'question_number': event['question_number'],
-            'test_id': event['test_id']
-        }))
-        
-    async def admin_user_answer(self, event):
-        await self.send(text_data=json.dumps({
-            'type': 'admin_user_answer',
-            'user_id': event['user_id'],
-            'username': event['username'],
-        }))
+        elif text_data['type'] == 'stop_question':
+            await stop_question()
+        elif text_data['type'] == 'stop_test':
+            start_test = await self.get_test_admin(True)
+            results = await sync_to_async(Result.objects.filter)(start_test = start_test)
+            admin_result = await sync_to_async(AdminResult.objects.create)(
+                admin = self.user,
+                results = '',
+                test = await sync_to_async(getattr)(start_test, None)
+            )
+            await self.channel_layer.group_send(
+                self.quiz_group_name,
+                {
+                    'type': 'send_data',
+                    'data_type': 'stop_test'
+                }
+            )
+            
+    async def send_data(self, event):
+        event['type'] = event['data_type']
+        await self.send(text_data=json.dumps(event))

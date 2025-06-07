@@ -42,12 +42,15 @@ function workSocket(){
                     console.log(response)
                     let data = response.question
                     let questionDiv = document.querySelector('.question-block');
+                    questionDiv.innerHTML = ''
                     let question = document.createElement('h2')
                     question.textContent = data['question']
                     questionDiv.append(question)
                     if (data['answer_type'] === 'multiple_choice') {
                         if (response.user_result){
-                            coverQuestion()
+                            if (!response.question_finished){
+                                coverQuestion()
+                            }
                         }
                         let answers = JSON.parse(data['answers'].replace(/'/g, '"'))
                         let answersDiv = document.createElement('div')
@@ -75,40 +78,75 @@ function workSocket(){
                                     'answer': userAnswers,
                                     'question_id': data['id']
                                 }))
+                                let html = answersDiv.innerHTML
+                                answersDiv.innerHTML = ""
+                                answersDiv.innerHTML = html
+                                userAnswers.forEach(function(answer, index) {
+                                    answersDiv.querySelectorAll('input')[index].checked = answer
+                                })
                                 buttonSubmit.removeEventListener('click', buttonClickHandler)
                                 coverQuestion();
                             }
-                            if (!response.user_result){
+                            if (!response.user_result && !response.question_finished){
                                 buttonSubmit.addEventListener('click', buttonClickHandler)
                             } else {
                                 let results = response.user_result.result.split(',')
                                 results.forEach(function(result, index) {
-                                    console.log(result.indexOf('True'))
+                                    console.log(result)
                                     if (result.indexOf('True') != -1){
                                         answersDiv.querySelectorAll('input')[index].checked = true
+                                        answersDiv.querySelectorAll('.answer')[index].classList.add('selected')
                                     }
                                 })
                             }
                             questionDiv.append(buttonSubmit)
+                        } else if (response.user_result) {
+                            let answersDiv = document.querySelector('.question-block').querySelectorAll('.answer')
+                            answersDiv.forEach(function(answer){
+                                if (answer.textContent == response.user_result.result) {
+                                    answer.classList.add('selected')
+                                }
+                            })
                         }
                         answersDiv.querySelectorAll('.answer').forEach(function(answer) {
                             function singleButtonHandler(){
-                                answer.classList.toggle('active')
-                                if (countCorrectAnsers > 1){
-                                    answer.querySelector('input').checked = !answer.querySelector('input').checked
-                                } else {
-                                    socket.send(JSON.stringify({
-                                        'type': 'send_answer',
-                                        'username': document.getElementById('username').textContent,
-                                        'answer': answer.textContent,
-                                        'question_id': data['id']
-                                    }))
-                                    answer.removeEventListener('click', singleButtonHandler)
-                                    coverQuestion();
+                                if (!response.question_finished){
+                                    answer.classList.toggle('active')
+                                    if (countCorrectAnsers > 1){
+                                        answer.querySelector('input').checked = !answer.querySelector('input').checked
+                                        answer.classList.toggle('selected')
+                                    } else {
+                                        socket.send(JSON.stringify({
+                                            'type': 'send_answer',
+                                            'username': document.getElementById('username').textContent,
+                                            'answer': answer.textContent,
+                                            'question_id': data['id']
+                                        }))
+                                        answer.classList.add('selected')
+                                        let html = answersDiv.innerHTML
+                                        answersDiv.innerHTML = ""
+                                        answersDiv.innerHTML = html
+                                        coverQuestion();
+                                    }
                                 }
                             }
                             answer.addEventListener('click', singleButtonHandler)
+                            
                         }) 
+
+                        if (response.question_finished){
+                            let correct_answers = data['correct_answer'].split(', ')
+                            correct_answers.forEach(function(answer, index){
+                                let answerDiv = document.querySelector('.question-block').querySelectorAll('.answer')[index]
+                                if (answer.indexOf('true') != -1){
+                                    answerDiv.classList.add('correct')
+                                } else {
+                                    if (answerDiv.classList.contains('selected')){
+                                        answerDiv.classList.add('incorrect')
+                                    }
+                                }
+                            })
+                        }
                     } else if (data['answer_type'] === 'fill_blank') {
                         let input = document.createElement('input')
                         input.classList.add('fill_blank_input')
@@ -118,7 +156,30 @@ function workSocket(){
                         questionDiv.append(buttonSubmit)
                         if (response['user_result']){
                             input.value = response['user_result']['result']
-                            coverQuestion()
+                            if (!response.question_finished){
+                                coverQuestion()
+                            } else {
+                                let correctAnswer = data['correct_answer']
+                                let alternateAnswers = JSON.parse(data.answers.replace(/'/g, '"'))
+                                let correct = false
+                                alternateAnswers.forEach(function(altAns){
+                                    if (altAns.type == 'exactly'){
+                                        if (altAns.answer == input.value){
+                                            correct = true
+                                        }
+                                    } else {
+                                        if (input.value.indexOf(altAns.answer) != -1){
+                                            correct = true
+                                        }
+                                    }
+                                })
+                                if (input.value == correctAnswer || correct){
+                                    input.classList.add('correct')
+                                } else {
+                                    input.classList.add('incorrect')
+                                }
+                            
+                            }
                         } else {
                             function buttonClickHandler() {
                                 socket.send(JSON.stringify({
@@ -135,6 +196,47 @@ function workSocket(){
                     }
                 }
             })
+        } else if(data['type'] == 'check_correct'){
+            console.log(data)
+            let coverDiv = document.querySelector('.cover');
+            if (coverDiv){
+                coverDiv.remove()
+            }
+            if (data['question_type'] == "multiple_choice"){
+                let correct_answers = data['correct_answer'].split(', ')
+                console.log(correct_answers)
+                correct_answers.forEach(function(answer, index){
+                    let answerDiv = document.querySelector('.question-block').querySelectorAll('.answer')[index]
+                    if (answer.indexOf('true') != -1){
+                        answerDiv.classList.add('correct')
+                    } else {
+                        if (answerDiv.classList.contains('selected')){
+                            answerDiv.classList.add('incorrect')
+                        }
+                    }
+                })
+            } else if (data['question_type'] == 'fill_blank') {
+                let userAnswer = document.querySelector('.fill_blank_input')
+                let correctAnswer = data['correct_answer']
+                let alternateAnswers = JSON.parse(data.answer.replace(/'/g, '"'))
+                let correct = false
+                alternateAnswers.forEach(function(altAns){
+                    if (altAns.type == 'exactly'){
+                        if (altAns.answer == userAnswer.value){
+                            correct = true
+                        }
+                    } else {
+                        if (userAnswer.value.indexOf(altAns.answer) != -1){
+                            correct = true
+                        }
+                    }
+                })
+                if (userAnswer.value == correctAnswer || correct){
+                    userAnswer.classList.add('correct')
+                } else {
+                    userAnswer.classList.add('incorrect')
+                }
+            }
         }
     }
 }
