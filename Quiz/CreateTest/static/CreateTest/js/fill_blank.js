@@ -2,8 +2,8 @@ let addAlternateButton = document.querySelector('.alternate-answer-button');
 if (addAlternateButton) {
     addAlternateButton.addEventListener('click', addAlternateAnswer);
 }
-let select = document.querySelector('.select');
-selectChange(select);
+let select = document.querySelectorAll('.select');
+select.forEach(selectChange);
 
 function addAlternateAnswer() {
     let alternateAnswersContainer = document.querySelector('.alternate-answers');

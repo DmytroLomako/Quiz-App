@@ -17,7 +17,8 @@
 
 {% block content %}
     <div class="answers-div">
-        {% if question %}
+        {% if question and question.answer_type == 'multiple_choice' %}
+            <input type="hidden" name="answer_type" value="{{ question.answer_type }}">
             {% str_to_list question.answers as answers %}
             {% for answer in answers %}
                 {% check_answer_correct answers answer question.correct_answer as correct %}
@@ -39,70 +40,24 @@
                 </div>
             {% endfor %}
         {% else %}
-            <div class="answer-div">
-                <div class="answer-actions">
-                    <button type="button" class="delete-answer-button"><img src="{% static 'CreateTest/img/trash.png' %}" alt=""></button>
-                    <button type="button" class="image-answer-button"><img src="{% static 'CreateTest/img/picture.png' %}" alt=""></button>
-                    <input type="file" name="answer-image" class="answer-image" accept="image/*" style="display: none;">
-                    <div style="width: 100%; display: flex; justify-content: flex-end;">
-                        <div class="checkbox">
-                            <input class="checkbox-input" type="hidden" name="is_correct" value="false">
+            {% for i in '1234' %}
+                <div class="answer-div">
+                    <div class="answer-actions">
+                        <button type="button" class="delete-answer-button"><img src="{% static 'CreateTest/img/trash.png' %}" alt=""></button>
+                        <button type="button" class="image-answer-button"><img src="{% static 'CreateTest/img/picture.png' %}" alt=""></button>
+                        <input type="file" name="answer-image" class="answer-image" accept="image/*" style="display: none;">
+                        <div style="width: 100%; display: flex; justify-content: flex-end;">
+                            <div class="checkbox">
+                                <input class="checkbox-input" type="hidden" name="is_correct" value="false">
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="answer-text-div">
-                    <div class="auto-expanding-answer-div" contenteditable="true" placeholder="Введіть відповідь"></div>
-                    <input type="hidden" name="answer" class="answer-input">
-                </div>
-            </div>
-            <div class="answer-div">
-                <div class="answer-actions">
-                    <button type="button" class="delete-answer-button"><img src="{% static 'CreateTest/img/trash.png' %}" alt=""></button>
-                    <button type="button" class="image-answer-button"><img src="{% static 'CreateTest/img/picture.png' %}" alt=""></button>
-                    <input type="file" name="answer-image" class="answer-image" accept="image/*" style="display: none;">
-                    <div style="width: 100%; display: flex; justify-content: flex-end;">
-                        <div class="checkbox">
-                            <input type="hidden" name="is_correct" value="false">
-                        </div>
+                    <div class="answer-text-div">
+                        <div class="auto-expanding-answer-div" contenteditable="true" placeholder="Введіть відповідь"></div>
+                        <input type="hidden" name="answer" class="answer-input">
                     </div>
                 </div>
-                <div class="answer-text-div">
-                    <div class="auto-expanding-answer-div" contenteditable="true" placeholder="Введіть відповідь"></div>
-                    <input type="hidden" name="answer" class="answer-input">
-                </div>
-            </div>
-            <div class="answer-div">
-                <div class="answer-actions">
-                    <button type="button" class="delete-answer-button"><img src="{% static 'CreateTest/img/trash.png' %}" alt=""></button>
-                    <button type="button" class="image-answer-button"><img src="{% static 'CreateTest/img/picture.png' %}" alt=""></button>
-                    <input type="file" name="answer-image" class="answer-image" accept="image/*" style="display: none;">
-                    <div style="width: 100%; display: flex; justify-content: flex-end;">
-                        <div class="checkbox">
-                            <input type="hidden" name="is_correct" value="false">
-                        </div>
-                    </div>
-                </div>
-                <div class="answer-text-div">
-                    <div class="auto-expanding-answer-div" contenteditable="true" placeholder="Введіть відповідь"></div>
-                    <input type="hidden" name="answer" class="answer-input">
-                </div>
-            </div>
-            <div class="answer-div">
-                <div class="answer-actions">
-                    <button type="button" class="delete-answer-button"><img src="{% static 'CreateTest/img/trash.png' %}" alt=""></button>
-                    <button type="button" class="image-answer-button"><img src="{% static 'CreateTest/img/picture.png' %}" alt=""></button>
-                    <input type="file" name="answer-image" class="answer-image" accept="image/*" style="display: none;">
-                    <div style="width: 100%; display: flex; justify-content: flex-end;">
-                        <div class="checkbox">
-                            <input type="hidden" name="is_correct" value="false">
-                        </div>
-                    </div>
-                </div>
-                <div class="answer-text-div">
-                    <div class="auto-expanding-answer-div" contenteditable="true" placeholder="Введіть відповідь"></div>
-                    <input type="hidden" name="answer" class="answer-input">
-                </div>
-            </div>
+            {% endfor %}
         {% endif %}
         <button type="button" class="add-answer-button">
             <img src="{% static 'CreateTest/img/plus.svg' %}" alt="">

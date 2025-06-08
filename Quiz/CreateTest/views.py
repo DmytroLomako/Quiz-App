@@ -32,7 +32,7 @@ def render_multiple_choice(request, test_id):
         test = Test.objects.get(id=test_id)
         time = request.POST.get('time')
         time = int(time.split('_')[0])
-        question_number = test.count_question() + 1
+        question_number = test.count_question()
         question_text = request.POST.get('question')
         list_answers = request.POST.getlist('answer')
         list_correct_answers = request.POST.getlist('is_correct')
@@ -67,7 +67,7 @@ def render_fill_blank(request, test_id):
         test = Test.objects.get(id=test_id)
         time = request.POST.get('time')
         time = int(time.split('_')[0])
-        question_number = test.count_question() + 1
+        question_number = test.count_question()
         question_text = request.POST.get('question')
         answer = request.POST.get('correct_answer')
         alternate_answers = request.POST.getlist('alternate_answers')
@@ -100,7 +100,7 @@ def render_match(request, test_id):
         test = Test.objects.get(id=test_id)
         time = request.POST.get('time')
         time = int(time.split('_')[0])
-        question_number = test.count_question() + 1
+        question_number = test.count_question()
         question_text = request.POST.get('question')
         hints = request.POST.getlist('hint')
         answers = request.POST.getlist('answer')
@@ -171,6 +171,69 @@ def render_edit_test(request, test_id, question_id, question_type):
     if test.user == request.user:
         question = Question.objects.get(id=question_id)
         if question:
+            if request.method == 'POST':
+                print(request.POST)
+                answer_type = request.POST.get('answer_type')
+                question.answer_type = answer_type  
+                question.question = request.POST.get('question')
+                question.image = request.FILES.get('question_image') if 'question_image' in request.FILES else None
+                if answer_type == 'multiple_choice':
+                    question.answers = request.POST.getlist('answer')
+                    question.correct_answer = request.POST.getlist('is_correct')
+                    for i, answer in enumerate(question.answers):
+                        image_key = f'answer-image_{i}'
+                        if image_key in request.FILES:
+                            answer_image = AnswerImage.objects.filter(question=question, answer_id=str(i)).first()
+                            if answer_image:
+                                answer_image.image = request.FILES[image_key] 
+                            else:
+                                answer_image = AnswerImage(
+                                    image=request.FILES[image_key],
+                                    question=question,
+                                    answer_id=str(i)
+                                )
+                            answer_image.save()
+                elif answer_type == 'fill_blank':
+                    alternate_answers = request.POST.getlist('alternate_answers')
+                    alternate_types = request.POST.getlist('alternate_types')
+                    alternate_data = []
+                    for i in range(len(alternate_answers)):
+                        alternate_data.append({
+                            'answer': alternate_answers[i],
+                            'type': alternate_types[i]
+                        })
+                    question.answers = alternate_data
+                    question.correct_answer = request.POST.get('correct_answer')
+                elif answer_type == 'match':
+                    question.answers = request.POST.getlist('answer')
+                    question.correct_answer = request.POST.getlist('hint')
+                    for i, answer in enumerate(question.answers):
+                        image_key = f'answer-image_{i}'
+                        if image_key in request.FILES:
+                            answer_image = AnswerImage.objects.filter(question=question, answer_id=f'answer_{i}').first()
+                            if answer_image:
+                                answer_image.image = request.FILES[image_key]
+                            else:
+                                answer_image = AnswerImage(
+                                    image=request.FILES[image_key],
+                                    question=question,
+                                    answer_id=f'answer_{i}'
+                                )
+                            answer_image.save()
+                        hint_image_key = f'hint-image_{i}'
+                        if hint_image_key in request.FILES:
+                            hint_image = AnswerImage.objects.filter(question=question, answer_id=f'hint_{i}').first()
+                            if hint_image:
+                                hint_image.image = request.FILES[hint_image_key]
+                            else:
+                                hint_image = AnswerImage(
+                                    image=request.FILES[hint_image_key],
+                                    question=question,
+                                    answer_id=f'hint_{i}'
+                                )
+                            hint_image.save()
+                question.save()
+                return redirect('test_info', test_id)
             if question_type == 'multiple_choice':
                 return render(request, 'CreateTest/multiple_choice.html', context={'test': test, 'question': question, 'range': range(10, 121, 10)})
             elif question_type == 'fill_blank':

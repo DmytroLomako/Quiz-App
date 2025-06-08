@@ -40,7 +40,7 @@
             <div class="question-div">
                 <div class="question-actions">
                     <button class="button-drag"><img src="{% static 'CreateTest/img/dots.svg' %}" alt=""></button>
-                    <button class="question-type">{{ question.question_number }}. {{ question.answer_type }}</button>
+                    <button class="question-type">{{ question.question_number|add:"1" }}. {{ question.answer_type }}</button>
                     <select class="select-type" style="background-image: url({% static 'CreateTest/img/dropdown_arrow.png' %});">
                         {% for i in range %}
                             {% if i == question.time %}

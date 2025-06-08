@@ -22,6 +22,13 @@ def get_answers_from_list_dict(list_dict):
         answers.append(dict['answer'])
     return answers
 
+@register.simple_tag
+def get_type_and_answers_from_list_dict(list_dict):
+    answers = []
+    for dict in list_dict:
+        answers.append([dict['answer'], dict['type']])
+    return answers
+
 @register.filter
 def zip_lists(a, b):
     return zip(a, b)

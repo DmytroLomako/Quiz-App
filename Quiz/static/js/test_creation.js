@@ -1,4 +1,5 @@
 let selectElement = document.querySelector('.select-type');
+let questionIdInput = document.getElementById('questionIdInput');
 selectElement.addEventListener('change', function() {
     const selectedValue = this.value;
     let redirectUrl = '';
@@ -6,19 +7,34 @@ selectElement.addEventListener('change', function() {
     switch(selectedValue) {
         case 'multiple':
             redirectUrl = window.location.href.split('/');
-            redirectUrl[redirectUrl.length - 3] = 'multiple_choice';
+            console.log(redirectUrl)
+            if (questionIdInput) {
+                redirectUrl[redirectUrl.length - 1] = 'multiple_choice';
+            } else {
+                redirectUrl[redirectUrl.length - 3] = 'multiple_choice';
+            }
+            console.log(redirectUrl)
             break;
         case 'blank':
             redirectUrl = window.location.href.split('/');
-            redirectUrl[redirectUrl.length - 3] = 'fill_in_the_blank';
+            if (questionIdInput) {
+                redirectUrl[redirectUrl.length - 1] = 'fill_blank';
+            } else {
+                redirectUrl[redirectUrl.length - 3] = 'fill_blank';
+            }
             break;
         case 'match':
             redirectUrl = window.location.href.split('/');
-            redirectUrl[redirectUrl.length - 3] = 'match';
+            if (questionIdInput) {
+                redirectUrl[redirectUrl.length - 1] = 'match';
+            } else {
+                redirectUrl[redirectUrl.length - 3] = 'match';
+            }
             break;
     }
     
     if (redirectUrl) {
+        console.log(redirectUrl)
         window.location.href = redirectUrl.join('/');
     }
 });
@@ -32,7 +48,6 @@ let questionDiv = document.querySelector('.question-div')
 let autoExpandingDiv = document.querySelector('.auto-expanding-div')
 let questionInput = document.getElementById('questionInput')
 
-let questionIdInput = document.getElementById('questionIdInput');
 if (questionIdInput) {
     let questionInput = autoExpandingDiv.nextElementSibling;
     autoExpandingDiv.textContent = questionInput.value;

@@ -1,5 +1,6 @@
 {% extends 'test_creation.html' %}
 {% load static %}
+{% load customtags %}
 
 {% block title %}Заповніть бланк{% endblock %}
 
@@ -15,20 +16,44 @@
 {% endblock %}
 
 {% block content %}
-    <div class="answer">
-        <input type="text" class="answer-input" placeholder="Введіть відповідь" name="correct_answer">
-    </div>
-    <div class="alternate-answers">
-        <h4>Альтернативні варіанти</h4>
-        <div class="alternate-answer">
-            <select name="" class="select" id="" style="background-image: url({% static 'CreateTest/img/dropdown_arrow_white.png' %});">
-                <option value="exactly">точно</option>
-                <option value="contains">містить</option>
-            </select>
-            <input type="hidden" name="alternate_types" value="exactly" class="select-input">
-            <input type="text" class="alternate-answer-input" placeholder="Введіть відповідь" name="alternate_answers">
-            <button type="button"><img src="{% static 'CreateTest/img/trash.png' %}" alt=""></button>
+    {% if question and question.answer_type == 'fill_blank' %}
+        <input type="hidden" name="answer_type" value="{{ question.answer_type }}">
+        <div class="answer">
+            <input type="text" class="answer-input" placeholder="Введіть відповідь" name="correct_answer" value="{{ question.correct_answer }}">
         </div>
-        <div style="width: 55%; display:flex; justify-content:flex-start;"><button type="button" class="alternate-answer-button"><img src="{% static 'CreateTest/img/plus.svg' %}" alt="">Додати альтернативний варіант</button></div>
-    </div>
+        <div class="alternate-answers">
+            <h4>Альтернативні варіанти</h4>
+            {% str_to_list question.answers as answers %}
+            {% get_type_and_answers_from_list_dict answers as answers %}
+            {% for answer, type in answers %}
+                <div class="alternate-answer">
+                    <select name="" class="select" id="" style="background-image: url({% static 'CreateTest/img/dropdown_arrow_white.png' %});">
+                        <option value="exactly" {% if type == "exactly" %} selected {% endif %}>точно</option>
+                        <option value="contains" {% if type == "contains" %} selected {% endif %}>містить</option>
+                    </select>
+                    <input type="hidden" name="alternate_types" value="{{ type }}" class="select-input">
+                    <input type="text" class="alternate-answer-input" placeholder="Введіть відповідь" name="alternate_answers" value="{{ answer }}">
+                    <button type="button"><img src="{% static 'CreateTest/img/trash.png' %}" alt=""></button>
+                </div>
+            {% endfor %}
+            <div style="width: 55%; display:flex; justify-content:flex-start;"><button type="button" class="alternate-answer-button"><img src="{% static 'CreateTest/img/plus.svg' %}" alt="">Додати альтернативний варіант</button></div>
+        </div>
+    {% else %}
+        <div class="answer">
+            <input type="text" class="answer-input" placeholder="Введіть відповідь" name="correct_answer">
+        </div>
+        <div class="alternate-answers">
+            <h4>Альтернативні варіанти</h4>
+            <div class="alternate-answer">
+                <select name="" class="select" id="" style="background-image: url({% static 'CreateTest/img/dropdown_arrow_white.png' %});">
+                    <option value="exactly">точно</option>
+                    <option value="contains">містить</option>
+                </select>
+                <input type="hidden" name="alternate_types" value="exactly" class="select-input">
+                <input type="text" class="alternate-answer-input" placeholder="Введіть відповідь" name="alternate_answers">
+                <button type="button"><img src="{% static 'CreateTest/img/trash.png' %}" alt=""></button>
+            </div>
+            <div style="width: 55%; display:flex; justify-content:flex-start;"><button type="button" class="alternate-answer-button"><img src="{% static 'CreateTest/img/plus.svg' %}" alt="">Додати альтернативний варіант</button></div>
+        </div>
+    {% endif %}
 {% endblock %}

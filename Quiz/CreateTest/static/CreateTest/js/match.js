@@ -1,4 +1,13 @@
 let matchColors = ['#EFA929', '#29BDEF', '#8529EF', '#EF7229', '#3AAB23'];
+let answerColors = ['#efaa2abf', '#29bdefbf', '#8529efbf', '#ef7229bf', '#3aab23bf'];
+let hintDivs = document.querySelectorAll('.hint-div');
+let answerDivs = document.querySelectorAll('.answer-div');
+hintDivs.forEach((div, index) => {
+    div.style.backgroundColor = matchColors[index];
+})
+answerDivs.forEach((div, index) => {
+    div.style.backgroundColor = answerColors[index];
+})
 
 function addOpacity(element, color){
     let r, g, b;
