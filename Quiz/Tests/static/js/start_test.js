@@ -193,6 +193,68 @@ function workSocket(){
                             }
                             buttonSubmit.addEventListener('click', buttonClickHandler)
                         }
+                    } else if (data['answer_type'] === 'match') {
+                        let hints = JSON.parse(data['correct_answer'].replace(/'/g, '"'))
+                        let answers = JSON.parse(data['answers'].replace(/'/g, '"'))
+                        let answersDiv = document.createElement('div')
+                        let hintsDiv = document.createElement('div')
+                        answersDiv.classList.add('answers-div')
+                        hintsDiv.classList.add('hints-div')
+                        questionDiv.append(hintsDiv)
+                        questionDiv.append(answersDiv)
+                        answers.forEach(function(answerText, index){
+                            let answer = document.createElement('div')
+                            answer.textContent = answerText
+                            answer.classList.add('answer-match')
+                            answersDiv.append(answer)
+                            answer.style.width = `${90 / answers.length}%`
+                        })
+                        hints.forEach(function(hintText, index){
+                            let hintWrapper = document.createElement('div')
+                            hintWrapper.classList.add('hint-wrapper')
+                            let hint = document.createElement('div')
+                            hint.textContent = hintText
+                            hint.classList.add('hint-match')
+                            hintsDiv.append(hintWrapper)
+                            hintWrapper.append(hint)
+                            hintWrapper.style.width = `${90 / hints.length}%`
+
+                            hint.addEventListener('mousedown', function(event) {
+                                hint.style.position = 'absolute';
+                                let hintRect = hint.getBoundingClientRect()
+                                hint.style.zIndex = 1
+                                let start_x = hintRect.x
+                                let start_y = hintRect.y
+                                move(event);
+                                function move(event){
+                                    let hintRect = hint.getBoundingClientRect()
+                                    let x = parseInt(event.clientX - hintRect.width / 2 - start_x)
+                                    let y = parseInt(event.clientY - hintRect.height / 2 - start_y)
+                                    hint.style.left = `${x}px`;
+                                    hint.style.top = `${y}px`;
+                                }
+                                hint.addEventListener('mousemove', move)
+                                hint.addEventListener('mouseup', function(eventUp){
+                                    let answers = document.querySelectorAll('.answer-match')
+                                    let add = false
+                                    answers.forEach(function(answer){
+                                        let answerRect = answer.getBoundingClientRect()
+                                        if (eventUp.clientX > answerRect.x && eventUp.clientX < answerRect.right && eventUp.clientY > answerRect.top && eventUp.clientY < answerRect.bottom) {
+                                            answer.appendChild(hint)
+                                            add = true
+                                        }
+                                    })
+                                    if (!add){
+                                        hintWrapper.appendChild(hint)
+                                    }
+                                    hint.removeEventListener('mousemove', move)
+                                    hint.style.position = 'static'
+                                    hint.style.left = `0px`;
+                                    hint.style.top = `0px`;
+                                    hint.style.zIndex = 0
+                                })
+                            })
+                        })
                     }
                 }
             })

@@ -47,11 +47,36 @@ socket.onmessage = function(event){
         usernames.forEach(user => {
             user.parentElement.classList.remove('answered')
         })
-        console.log(data['last_question'])
         if (data['last_question']){
             lastQuestion = true
         }
-        console.log(lastQuestion)
+        $.ajax({
+            url: '/tests/get_question',
+            type: 'POST',
+            data: {
+                'csrfmiddlewaretoken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'test_id': data['test_id'],
+                'question_number': data['question_number']
+            },
+            success: function(response){
+                console.log(response)
+                let data = response.question
+                let questionDiv = document.querySelector('.question-block')
+                if (questionDiv) {
+                    questionDiv.remove()
+                }
+                questionDiv = document.createElement('div')
+                questionDiv.classList.add('question-block')
+                questionDiv.innerHTML = `<h2>${data['question']}</h2>`
+                document.body.append(questionDiv)
+                if ( data.answer_type == 'multiple_choice' ){
+                    let answers = JSON.parse(data['answers'].replace(/'/g, '"'))
+                    answers.forEach(function(answer, index){
+                        questionDiv.innerHTML += `<div class='answer'>${answer}</div>`
+                    })
+                }
+            }
+        })
     }
 }
 

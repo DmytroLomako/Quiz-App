@@ -1,3 +1,8 @@
 .answered{
     color: green;
 }
+.answer{
+    margin: 10px;
+    border: 1px solid blueviolet;
+    cursor: pointer;
+}

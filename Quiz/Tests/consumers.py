@@ -5,6 +5,7 @@ from asgiref.sync import sync_to_async
 from channels.db import database_sync_to_async
 from urllib.parse import parse_qs
 from django.contrib.auth.models import User
+from transliterate import translit, get_available_language_codes
 
 
 
@@ -21,25 +22,30 @@ class QuizConsumers(AsyncWebsocketConsumer):
         )
         await self.accept()
         params = parse_qs(self.scope['query_string'].decode())
+        id = None
+        username = None
+        start_test = await self.get_test_admin(True)
         if not self.user.is_authenticated or self.user != admin:
-            id = None
             if self.user.is_authenticated: 
                 id = self.user.id
                 username = self.user.username
             else:
                 username = params.get('name', '')
             socket_exist = params.get('socket_exist', False)
-            start_test = await self.get_test_admin(True)
             if not socket_exist:
                 try:
                     if start_test:
                         if self.user.is_authenticated:
                             await sync_to_async(start_test.users.add)(self.user)
                         else:
-                            start_test.users_not_auth += f'{username[0]}%,'
+                            print(start_test.users_not_auth)
+                            if start_test.users_not_auth != None:
+                                start_test.users_not_auth += f'{username[0]}%,'
+                            else:
+                                start_test.users_not_auth = f'{username[0]}%,'
                         await sync_to_async(start_test.save)()
                 except Exception as error:
-                    print(error)
+                    print("connect error", error)
                 await self.channel_layer.group_send(
                     self.quiz_group_name,
                     {
@@ -49,26 +55,31 @@ class QuizConsumers(AsyncWebsocketConsumer):
                         'id': id
                     }
                 )
-            if start_test.current_question != -1:
-                if id:
-                    self.user_group_name = f'user_{id}'
-                else:
-                    self.user_group_name = f'not_auth_user_{username}'
-                await self.channel_layer.group_add(
-                    self.user_group_name,
-                    self.channel_name
-                )
-                count_question = await sync_to_async(start_test.count_question)()
-                await self.channel_layer.group_send(
-                    self.user_group_name,
-                    {
-                        'type': 'send_data',
-                        'data_type': 'get_question',
-                        'question_number': start_test.current_question,
-                        'test_id': start_test.id,
-                        'last_question': start_test.current_question == count_question - 1
-                    }
-                )
+        if start_test.current_question != -1:
+            print("USER CONNECT")
+            if self.user == admin:
+                id = admin.id
+            if id:
+                self.user_group_name = f'user_{id}'
+            else:
+                print(username)
+                self.user_group_name = f'not_auth_user_{translit(username[0], 'ru', 'en')}'
+                print(self.user_group_name)
+            await self.channel_layer.group_add(
+                self.user_group_name,
+                self.channel_name
+            )
+            count_question = await sync_to_async(start_test.count_question)()
+            await self.channel_layer.group_send(
+                self.user_group_name,
+                {
+                    'type': 'send_data',
+                    'data_type': 'get_question',
+                    'question_number': start_test.current_question,
+                    'test_id': start_test.id,
+                    'last_question': start_test.current_question == count_question - 1
+                }
+            )
             
     @database_sync_to_async
     def get_test_admin(self, get_test = False):
@@ -82,13 +93,6 @@ class QuizConsumers(AsyncWebsocketConsumer):
             self.quiz_code,
             self.channel_name
         )
-        
-    async def user_connect(self, event):
-        await self.send(text_data=json.dumps({
-            'type': 'user_connect',
-            'username': event['username'],
-            'id': event['id']
-        }))
         
     async def receive(self, text_data=None):
         async def stop_question():
@@ -111,11 +115,14 @@ class QuizConsumers(AsyncWebsocketConsumer):
         text_data = json.loads(text_data)
         if text_data['type'] == 'user_disconnect':
             try:
+                print("DISCONECT")
                 start_test = await self.get_test_admin(True)
                 if self.user.is_authenticated:
                     await sync_to_async(start_test.users.remove)(self.user)
                 else:
+                    print(start_test.users_not_auth)
                     usernames = start_test.users_not_auth.split('%,')
+                    print(usernames, text_data['username'])
                     for name in usernames[:-1]:
                         if name == text_data['username']:
                             usernames.remove(name)
@@ -130,8 +137,8 @@ class QuizConsumers(AsyncWebsocketConsumer):
                         'receiver': 'admin'
                     }
                 )
-            except:
-                print('disconnect error')
+            except Exception as error:
+                print(f'disconnect error :{error}')
         elif text_data['type'] == 'admin_user_disconnect':
             user_id = text_data['user_id']
             username = text_data['username']

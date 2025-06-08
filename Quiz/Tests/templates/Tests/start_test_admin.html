@@ -6,9 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Початок тесту</title>
     <link rel="stylesheet" href="{% static 'css/start_test_admin.css' %}">
+    <script src="{% static 'js/jquery.js' %}" defer></script>
     <script src="{% static 'js/start_test_admin.js' %}" defer></script>
 </head>
 <body>
+    {% csrf_token %}
     <h1 id="test_code">{{ test.code }}</h1>
     <button id="startTest">Почати тест</button>
     <div class="users">
