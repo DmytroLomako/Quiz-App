@@ -241,3 +241,27 @@ def render_edit_test(request, test_id, question_id, question_type):
             elif question_type == 'match':
                 return render(request, 'CreateTest/match.html', context={'test': test, 'question': question, 'range': range(10, 121, 10)})
     return redirect('/')
+
+@login_required(login_url='/auth/')
+def delete_question(request, test_id, question_id):
+    test = Test.objects.get(id=test_id)
+    if test.user == request.user:
+        question = Question.objects.get(id=question_id)
+        if question:
+            question.delete()
+        for i, question in enumerate(Question.objects.filter(test=test)):
+            question.question_number = i
+            question.save()
+        return redirect('test_info', test_id)
+    
+@login_required(login_url='/auth/')
+def save_test(request, test_id):
+    if request.method == 'POST':
+        test = Test.objects.get(id=test_id)
+        if test.user == request.user:
+            test.name = request.POST.get('name')
+            test.image = request.FILES.get('image') if 'image' in request.FILES else None
+            test.finished = True
+            test.save()
+            return redirect('library')
+    return redirect('/')

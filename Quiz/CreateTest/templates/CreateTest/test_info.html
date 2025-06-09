@@ -8,6 +8,7 @@
     <title>Document</title>
     <link rel="stylesheet" href="{% static 'CreateTest/css/create_test.css' %}">
     <link rel="stylesheet" href="{% static 'CreateTest/css/test_info.css' %}">
+    <script src="{% static 'CreateTest/js/test_info.js' %}" defer></script>
 </head>
 <body>
     <header>
@@ -50,12 +51,18 @@
                             {% endif %}
                         {% endfor %}
                     </select>
-                    <div class="question-div-buttons">
+                    <form class="question-div-buttons" method="post" action="{% url 'delete_question' test.id question.id %}">
+                        {% csrf_token %}
                         <a href="/create_quiz/edit/{{ test.id }}/question/{{ question.id }}/{{ question.answer_type }}"><button class="edit-button"><img src="{% static 'CreateTest/img/edit.png' %}" alt="">Редагувати</button></a>
                         <button class="delete-button"><img src="{% static 'CreateTest/img/trash.png' %}" alt=""></button>
-                    </div>
+                    </form>
                 </div>
                 <h3>{{ question.question }}</h3>
+                {% if question.image.url %}
+                    <div class="question-image-wrapper">
+                        <img class="question-image" src="{{ question.image.url }}" alt="">
+                    </div>
+                {% endif %}
                 {% if question.answer_type == 'multiple_choice' %}
                     <h4>Варіанти відповідей</h4>
                     <div class="question-answers-div">
@@ -119,5 +126,37 @@
             Додати питання
         </button>
     </main>
+    <div class="overlay" style="display: none;">
+        <form class="publish-form" method="post" action="{% url 'save_test' test.id %}">
+            {% csrf_token %}
+            <button type="button" class="publish-cancel">
+                <img src="{% static 'CreateTest/img/cross_black.png' %}" alt="">
+            </button>
+            <h1>Назва</h1>
+            <input type="text" name="name" class="name-input" placeholder="Тест без назви" required>
+            <div class="cover-image-wrapper">
+                <div class="cover-image-div">
+                    <button type="button" class="add-answer-button">
+                        <img src="{% static 'CreateTest/img/plus.svg' %}" alt="">
+                    </button>
+                    <h2>Додати зображення обкладинки</h2>
+                </div>
+                <div class="cover-image" style="display: none;">
+                   <div class="cover-image-actions" style="display: none;">
+                        <div>
+                            <button type="button" class="image-cover-button"><img src="{% static 'CreateTest/img/picture.png' %}" alt=""></button>
+                            <button type="button" class="delete-image-button"><img src="{% static 'CreateTest/img/trash.png' %}" alt=""></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <input type="file" name="cover-image" class="cover-image-input" style="display: none;">
+            <div class="publish-button-div">
+                <button class="publish-button">
+                    Публікувати
+                </button>
+            </div>
+        </form>
+    </div>
 </body>
 </html>
