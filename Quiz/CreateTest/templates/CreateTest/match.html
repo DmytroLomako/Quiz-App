@@ -16,8 +16,10 @@
 {% endblock %}
 
 {% block content %}
+    {% if question %}
+        <input type="hidden" name="answer_type" value="match">
+    {% endif %}
     {% if question and question.answer_type == 'match' %}
-        <input type="hidden" name="answer_type" value="{{ question.answer_type }}">
         {% str_to_list question.answers as answers %}
         {% str_to_list question.correct_answer as hints %}
         <div class="answers-div">

@@ -17,8 +17,10 @@
 
 {% block content %}
     <div class="answers-div">
+        {% if question %}
+            <input type="hidden" name="answer_type" value="multiple_choice">
+        {% endif %}
         {% if question and question.answer_type == 'multiple_choice' %}
-            <input type="hidden" name="answer_type" value="{{ question.answer_type }}">
             {% str_to_list question.answers as answers %}
             {% for answer in answers %}
                 {% check_answer_correct answers answer question.correct_answer as correct %}

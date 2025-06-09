@@ -16,8 +16,10 @@
 {% endblock %}
 
 {% block content %}
+    {% if question %}
+        <input type="hidden" name="answer_type" value="fill_blank">
+    {% endif %}
     {% if question and question.answer_type == 'fill_blank' %}
-        <input type="hidden" name="answer_type" value="{{ question.answer_type }}">
         <div class="answer">
             <input type="text" class="answer-input" placeholder="Введіть відповідь" name="correct_answer" value="{{ question.correct_answer }}">
         </div>

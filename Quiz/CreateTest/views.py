@@ -17,7 +17,7 @@ def render_choose_test(request):
             link = 'create_quiz/match'
         else:
             return render(request, 'CreateTest/choose_test.html', context={'error': 'Оберіть тип тесту'})
-        test = Test.objects.create(user = request.user, name = '', logo = None, finished = False)
+        test = Test.objects.create(user = request.user, name = 'Тест без назви', logo = None, finished = False)
         test.save()
         return redirect(f'/{link}/{test.id}')
     return render(request, 'CreateTest/choose_test.html', context={'error': None})
@@ -49,7 +49,6 @@ def render_multiple_choice(request, test_id):
         
         for i, answer in enumerate(list_answers):
             image_key = f'answer-image_{i}'
-            print(image_key, request.FILES)
             if image_key in request.FILES:
                 answer_image = AnswerImage(
                     image = request.FILES[image_key],
@@ -172,11 +171,11 @@ def render_edit_test(request, test_id, question_id, question_type):
         question = Question.objects.get(id=question_id)
         if question:
             if request.method == 'POST':
-                print(request.POST)
                 answer_type = request.POST.get('answer_type')
                 question.answer_type = answer_type  
                 question.question = request.POST.get('question')
-                question.image = request.FILES.get('question_image') if 'question_image' in request.FILES else None
+                if 'question_image' in request.FILES:
+                    question.image = request.FILES.get('question_image')
                 if answer_type == 'multiple_choice':
                     question.answers = request.POST.getlist('answer')
                     question.correct_answer = request.POST.getlist('is_correct')

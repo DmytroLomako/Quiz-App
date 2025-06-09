@@ -53,12 +53,12 @@
                     </select>
                     <form class="question-div-buttons" method="post" action="{% url 'delete_question' test.id question.id %}">
                         {% csrf_token %}
-                        <a href="/create_quiz/edit/{{ test.id }}/question/{{ question.id }}/{{ question.answer_type }}"><button class="edit-button"><img src="{% static 'CreateTest/img/edit.png' %}" alt="">Редагувати</button></a>
+                        <a href="/create_quiz/edit/{{ test.id }}/question/{{ question.id }}/{{ question.answer_type }}"><button type="button" class="edit-button"><img src="{% static 'CreateTest/img/edit.png' %}" alt="">Редагувати</button></a>
                         <button class="delete-button"><img src="{% static 'CreateTest/img/trash.png' %}" alt=""></button>
                     </form>
                 </div>
                 <h3>{{ question.question }}</h3>
-                {% if question.image.url %}
+                {% if question.image and question.image.url %}
                     <div class="question-image-wrapper">
                         <img class="question-image" src="{{ question.image.url }}" alt="">
                     </div>
