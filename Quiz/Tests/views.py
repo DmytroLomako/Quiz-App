@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from .models import *
 from django.forms.models import model_to_dict
+import random, json
 
 # Create your views here.
 def render_start_test(request, code):
@@ -50,7 +51,10 @@ def get_question(request):
             question = Question.objects.filter(test = test, question_number = int(question_number)).first()
             if question:
                 question_data = model_to_dict(question)
-                question_data['image'] = question_data['image'].url
+                if question.image:    
+                    question_data['image'] = question.image.url
+                else:
+                    question_data['image'] = None
                 result = None
                 if request.user.is_authenticated:
                     result = Result.objects.filter(start_test=start_test, question=question, user=request.user).first()
@@ -58,6 +62,11 @@ def get_question(request):
                     result = Result.objects.filter(start_test=start_test, question=question, user_not_auth=request.POST.get('username')).first()
                 if result != None:
                     result = model_to_dict(result)
+                if question_data['answer_type'] == 'match':
+                    hints = json.loads(question_data['correct_answer'].replace("'", '"'))
+                    question_data['correct_hints'] = str(hints)
+                    random.shuffle(hints)
+                    question_data['correct_answer'] = str(hints)
                 return JsonResponse({'question': question_data, "user_result": result, 'question_finished': start_test.question_finished})
         return JsonResponse({'question': None})
     

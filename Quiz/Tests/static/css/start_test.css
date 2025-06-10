@@ -36,6 +36,9 @@
     justify-content: center;
     align-items: center;
     background-color: rgb(141, 68, 68);
+    user-select: none;
+    cursor: pointer;
+    position: absolute;
 }
 .answer-match, .hint-wrapper{
     height: 100px;

@@ -228,7 +228,7 @@ class QuizConsumers(AsyncWebsocketConsumer):
             admin_result = await sync_to_async(AdminResult.objects.create)(
                 admin = self.user,
                 results = '',
-                test = await sync_to_async(getattr)(start_test, None)
+                test = await sync_to_async(getattr)(start_test, 'test')
             )
             await self.channel_layer.group_send(
                 self.quiz_group_name,

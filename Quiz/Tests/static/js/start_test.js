@@ -158,28 +158,7 @@ function workSocket(){
                             input.value = response['user_result']['result']
                             if (!response.question_finished){
                                 coverQuestion()
-                            } else {
-                                let correctAnswer = data['correct_answer']
-                                let alternateAnswers = JSON.parse(data.answers.replace(/'/g, '"'))
-                                let correct = false
-                                alternateAnswers.forEach(function(altAns){
-                                    if (altAns.type == 'exactly'){
-                                        if (altAns.answer == input.value){
-                                            correct = true
-                                        }
-                                    } else {
-                                        if (input.value.indexOf(altAns.answer) != -1){
-                                            correct = true
-                                        }
-                                    }
-                                })
-                                if (input.value == correctAnswer || correct){
-                                    input.classList.add('correct')
-                                } else {
-                                    input.classList.add('incorrect')
-                                }
-                            
-                            }
+                            } 
                         } else {
                             function buttonClickHandler() {
                                 socket.send(JSON.stringify({
@@ -192,6 +171,27 @@ function workSocket(){
                                 coverQuestion();
                             }
                             buttonSubmit.addEventListener('click', buttonClickHandler)
+                        } 
+                        if (response.question_finished){
+                            let correctAnswer = data['correct_answer']
+                            let alternateAnswers = JSON.parse(data.answers.replace(/'/g, '"'))
+                            let correct = false
+                            alternateAnswers.forEach(function(altAns){
+                                if (altAns.type == 'exactly'){
+                                    if (altAns.answer == input.value){
+                                        correct = true
+                                    }
+                                } else {
+                                    if (input.value.indexOf(altAns.answer) != -1){
+                                        correct = true
+                                    }
+                                }
+                            })
+                            if (input.value == correctAnswer || correct){
+                                input.classList.add('correct')
+                            } else {
+                                input.classList.add('incorrect')
+                            }
                         }
                     } else if (data['answer_type'] === 'match') {
                         let hints = JSON.parse(data['correct_answer'].replace(/'/g, '"'))
@@ -215,46 +215,99 @@ function workSocket(){
                             let hint = document.createElement('div')
                             hint.textContent = hintText
                             hint.classList.add('hint-match')
+                            hint.id = `hint-${index}`
                             hintsDiv.append(hintWrapper)
                             hintWrapper.append(hint)
                             hintWrapper.style.width = `${90 / hints.length}%`
-
-                            hint.addEventListener('mousedown', function(event) {
-                                hint.style.position = 'absolute';
-                                let hintRect = hint.getBoundingClientRect()
-                                hint.style.zIndex = 1
-                                let start_x = hintRect.x
-                                let start_y = hintRect.y
-                                move(event);
-                                function move(event){
+                            if (!response.question_finished && !response.user_result) {
+                                hint.addEventListener('mousedown', function(event) {
                                     let hintRect = hint.getBoundingClientRect()
-                                    let x = parseInt(event.clientX - hintRect.width / 2 - start_x)
-                                    let y = parseInt(event.clientY - hintRect.height / 2 - start_y)
-                                    hint.style.left = `${x}px`;
-                                    hint.style.top = `${y}px`;
-                                }
-                                hint.addEventListener('mousemove', move)
-                                hint.addEventListener('mouseup', function(eventUp){
-                                    let answers = document.querySelectorAll('.answer-match')
-                                    let add = false
-                                    answers.forEach(function(answer){
-                                        let answerRect = answer.getBoundingClientRect()
-                                        if (eventUp.clientX > answerRect.x && eventUp.clientX < answerRect.right && eventUp.clientY > answerRect.top && eventUp.clientY < answerRect.bottom) {
-                                            answer.appendChild(hint)
-                                            add = true
-                                        }
-                                    })
-                                    if (!add){
-                                        hintWrapper.appendChild(hint)
+                                    hint.style.zIndex = 1
+                                    let start_x = hintRect.x
+                                    let start_y = hintRect.y
+                                    move(event);
+                                    function move(event){
+                                        let hintRect = hint.getBoundingClientRect()
+                                        let x = parseInt(event.clientX - hintRect.width / 2 - start_x)
+                                        let y = parseInt(event.clientY - hintRect.height / 2 - start_y)
+                                        hint.style.left = `${x}px`;
+                                        hint.style.top = `${y}px`;
                                     }
-                                    hint.removeEventListener('mousemove', move)
-                                    hint.style.position = 'static'
-                                    hint.style.left = `0px`;
-                                    hint.style.top = `0px`;
-                                    hint.style.zIndex = 0
+                                    document.addEventListener('mousemove', move)
+                                    function setHint(eventUp){
+                                        let answers = document.querySelectorAll('.answer-match')
+                                        let add = false
+                                        answers.forEach(function(answer){
+                                            let answerRect = answer.getBoundingClientRect()
+                                            if (eventUp.clientX > answerRect.x && eventUp.clientX < answerRect.right && eventUp.clientY > answerRect.top && eventUp.clientY < answerRect.bottom) {
+                                                if (answer.querySelector('.hint-match') == null || answer.querySelector('.hint-match') == hint) {
+                                                    answer.appendChild(hint)
+                                                    add = true
+                                                }
+                                            }
+                                        })
+                                        if (!add){
+                                            hintWrapper.appendChild(hint)
+                                        }
+                                        document.removeEventListener('mousemove', move)
+                                        hint.removeEventListener('mouseup', setHint)
+                                        hint.style.left = `0px`;
+                                        hint.style.top = `0px`;
+                                        hint.style.zIndex = 0
+                                    }
+                                    hint.addEventListener('mouseup', setHint)
+                                })
+                            }
+                        })
+                        let buttonSubmit = document.createElement('button')
+                        buttonSubmit.textContent = 'Відправити'
+                        buttonSubmit.classList.add('button-submit')
+                        questionDiv.append(buttonSubmit)
+                        function submitMatch(){
+                            let answers = document.querySelectorAll('.answer-match')
+                            let hintsText = []
+                            answers.forEach(function(answer){
+                                if (answer.querySelector('.hint-match')){
+                                    hintsText.push(answer.querySelector('.hint-match').textContent)
+                                }
+                            })
+                            if (answers.length == hintsText.length){
+                                socket.send(JSON.stringify({
+                                    'type': 'send_answer',
+                                    'username': document.getElementById('username').textContent,
+                                    'answer': JSON.stringify(hintsText),
+                                    'question_id': data['id']
+                                }))
+                            }
+                            buttonSubmit.removeEventListener('click', submitMatch)
+                        }
+                        console.log(response.question_finished, response.user_result)
+                        if (!response.question_finished && !response.user_result) { 
+                            buttonSubmit.addEventListener('click', submitMatch)
+                        } else {
+                            let user_result = JSON.parse(response.user_result.result.replace(/'/g, '"'))
+                            let correctAnswer = JSON.parse(data['correct_hints'].replace(/'/g, '"'))
+                            let answers = document.querySelectorAll('.answer-match')
+                            user_result.forEach(function(hint, index){
+                                let hints = document.querySelectorAll('.hint-match')
+                                hints.forEach(function(hintDiv){
+                                    if (hintDiv.textContent == hint){
+                                        answers[index].appendChild(hintDiv)
+                                    }
                                 })
                             })
-                        })
+                            answers.forEach(function(answer, index){
+                                if (answer.querySelector('.hint-match')){
+                                    if (answer.querySelector('.hint-match').textContent == correctAnswer[index]){
+                                        answer.querySelector('.hint-match').classList.add('correct')
+                                    } else {
+                                        answer.querySelector('.hint-match').classList.add('incorrect')
+                                    }
+                                } else {
+                                    answer.classList.add('incorrect')
+                                }
+                            })
+                        }
                     }
                 }
             })
@@ -298,6 +351,21 @@ function workSocket(){
                 } else {
                     userAnswer.classList.add('incorrect')
                 }
+            } else if (data['question_type'] == 'match') {
+                let answers = document.querySelectorAll('.answer-match')
+                let correctAnswer = JSON.parse(data['correct_answer'].replace(/'/g, '"'))
+                answers.forEach(function(answer, index){
+                    if (answer.querySelector('.hint-match')){
+                        if (answer.querySelector('.hint-match').textContent == correctAnswer[index]){
+                            answer.querySelector('.hint-match').classList.add('correct')
+                        } else {
+                            answer.querySelector('.hint-match').classList.add('incorrect')
+                        }
+                    } else {
+                        answer.classList.add('incorrect')
+                    }
+                })
+
             }
         }
     }

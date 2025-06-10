@@ -127,7 +127,7 @@
         </button>
     </main>
     <div class="overlay" style="display: none;">
-        <form class="publish-form" method="post" action="{% url 'save_test' test.id %}">
+        <form class="publish-form" method="post" action="{% url 'save_test' test.id %}" enctype="multipart/form-data">
             {% csrf_token %}
             <button type="button" class="publish-cancel">
                 <img src="{% static 'CreateTest/img/cross_black.png' %}" alt="">
