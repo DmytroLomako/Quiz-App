@@ -7,6 +7,8 @@
 
 {% block links %}
     <link rel="stylesheet" href="{% static 'CreateTest/css/library.css' %}">
+    <script src="{% static 'js/jquery.js' %}" defer></script>
+    <script src="{% static 'CreateTest/js/library.js' %}" defer></script>
 {% endblock %}
 
 {% block content %}
@@ -28,7 +30,7 @@
                     <h4>{{ test.user }}</h4>
                 </div>
                 <div class="test-actions">
-                    <button type="button" class="delete-test-button"><img src="{% static 'CreateTest/img/trash.png' %}" alt=""></button>
+                    <button type="button" class="delete-test-button" value="{% url 'delete_test' test.id %}"><img src="{% static 'CreateTest/img/trash.png' %}" alt=""></button>
                     <div style="display: flex; gap: 10px;">
                         <a href="/create_quiz/test_info/{{ test.id }}"><button type="button" class="button-edit">Редагувати</button></a>
                         <button class="button-start">Грати</button>

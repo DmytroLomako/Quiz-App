@@ -17,7 +17,7 @@
                 <img src="{% static 'img/black_arrow_down.svg' %}" alt="">
             </button>
         </a>
-        <h3>Тест без назви</h3>
+        <h3 class="test-name">{% if test.name %} {{ test.name }} {% else %} Тест без назви {% endif %}</h3>
         <div class="header-saving-div">
             <button class="save-question-button">
                 <img src="{% static 'CreateTest/img/save.png' %}" alt="">
@@ -133,24 +133,27 @@
                 <img src="{% static 'CreateTest/img/cross_black.png' %}" alt="">
             </button>
             <h1>Назва</h1>
-            <input type="text" name="name" class="name-input" placeholder="Тест без назви" required>
+            <input type="text" name="name" class="name-input" placeholder="Тест без назви" value="{{ test.name }}" required>
             <div class="cover-image-wrapper">
-                <div class="cover-image-div">
+                <div class="cover-image-div" {% if test.logo and test.logo.url %} style="display: none;" {% endif %}>
                     <button type="button" class="add-answer-button">
                         <img src="{% static 'CreateTest/img/plus.svg' %}" alt="">
                     </button>
                     <h2>Додати зображення обкладинки</h2>
                 </div>
-                <div class="cover-image" style="display: none;">
+                <div class="cover-image" {% if test.logo == None and test.logo.url == None %} style="display: none;" {% endif %}>
                    <div class="cover-image-actions" style="display: none;">
                         <div>
                             <button type="button" class="image-cover-button"><img src="{% static 'CreateTest/img/picture.png' %}" alt=""></button>
                             <button type="button" class="delete-image-button"><img src="{% static 'CreateTest/img/trash.png' %}" alt=""></button>
                         </div>
                     </div>
+                    {% if test.logo and test.logo.url %}
+                        <img class="img" src="{{ test.logo.url }}" alt="">
+                    {% endif %}
                 </div>
             </div>
-            <input type="file" name="cover-image" class="cover-image-input" style="display: none;">
+            <input type="file" name="cover-image" class="cover-image-input" style="display: none;" accept="image/*">
             <div class="publish-button-div">
                 <button class="publish-button">
                     Публікувати

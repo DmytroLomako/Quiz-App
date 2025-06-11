@@ -1,10 +1,16 @@
 let safeButton = document.querySelector('.save-question-button');
 let closeButton = document.querySelector('.publish-cancel');
 let overlay = document.querySelector('.overlay');
-safeButton.addEventListener('click', function() {
+let testName = document.querySelector('.test-name');
+
+function showOverlay() {
     overlay.style.display = 'flex';
     document.body.style.overflow = 'hidden';
-});
+}
+
+safeButton.addEventListener('click', showOverlay);
+testName.addEventListener('click', showOverlay);
+
 closeButton.addEventListener('click', function() {
     overlay.style.display = 'none';
     document.body.style.overflow = 'auto';

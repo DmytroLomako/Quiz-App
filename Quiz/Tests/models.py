@@ -25,7 +25,7 @@ class ResultNotAuth(models.Model):
     
 class GlobalResult(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    test = models.ForeignKey(Test, on_delete=models.CASCADE)
+    test = models.ForeignKey(Test, on_delete=models.CASCADE, null=True)
     results = models.TextField()
 
     def __str__(self):

@@ -259,8 +259,17 @@ def save_test(request, test_id):
         test = Test.objects.get(id=test_id)
         if test.user == request.user:
             test.name = request.POST.get('name')
-            test.image = request.FILES.get('image') if 'image' in request.FILES else None
+            if 'cover-image' in request.FILES:
+                test.logo = request.FILES.get('cover-image')
             test.finished = True
             test.save()
             return redirect('library')
+    return redirect('/')
+
+@login_required(login_url='/auth/')
+def delete_test(request, test_id):
+    test = Test.objects.get(id=test_id)
+    if test.user == request.user:
+        test.delete()
+        return redirect('library')
     return redirect('/')
