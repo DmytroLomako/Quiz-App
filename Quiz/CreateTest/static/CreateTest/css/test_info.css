@@ -222,6 +222,7 @@ hr{
     width: 100%;
     height: 100%;
     padding: 10px 0;
+    max-height: 323.5px;
 }
 .cover-image-div{
     width: 100%;
@@ -316,11 +317,11 @@ hr{
     padding: 5px;
 }
 .question-image-wrapper{
-    width: 50px;
+    width: 100%;
     height: 50px;
     padding: 5px 0;
     display: flex;
-    justify-content: center;
+    /* justify-content: center; */
     align-items: center;
 }
 .question-image{
@@ -330,4 +331,12 @@ hr{
 .test-name{
     user-select: none;
     cursor: pointer;
+}
+.question-answer .answer-image{
+    width: auto;
+    max-width: 25px;
+    max-height: 25px;
+}
+.answer-image-wrapper{
+    margin-right: 8px;
 }

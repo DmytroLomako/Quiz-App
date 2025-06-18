@@ -1,12 +1,23 @@
 from django import template
-import ast
+import ast, json
 
 
 register = template.Library()
 
 @register.simple_tag
 def str_to_list(string):
+    if string == None:
+        return False
     return ast.literal_eval(string)
+
+@register.simple_tag
+def has_answer_image(question, answer):
+    answers = ast.literal_eval(question.answers)
+    answer_id = answers.index(answer)
+    for image in question.answerimage_set.all():
+        if image.answer_id == str(answer_id):
+            return image
+    return False
 
 @register.simple_tag
 def check_answer_correct(answers, answer, correct_answers):

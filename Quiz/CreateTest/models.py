@@ -25,7 +25,7 @@ class Question(models.Model):
     question_number = models.IntegerField(default=0)
     question = models.CharField(max_length=255)
     image = models.ImageField(upload_to='question')
-    answers = models.TextField()
+    answers = models.TextField(null=True)
     answer_type = models.CharField(max_length=50)
     correct_answer = models.TextField()
     test = models.ForeignKey(Test, on_delete=models.CASCADE)

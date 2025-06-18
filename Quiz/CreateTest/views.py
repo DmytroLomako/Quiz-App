@@ -192,15 +192,22 @@ def render_edit_test(request, test_id, question_id, question_type):
                                     answer_id=str(i)
                                 )
                             answer_image.save()
+                        else:
+                            answer_image = AnswerImage.objects.filter(question=question, answer_id=str(i)).first()
+                            if answer_image:
+                                answer_image.delete()
                 elif answer_type == 'fill_blank':
                     alternate_answers = request.POST.getlist('alternate_answers')
                     alternate_types = request.POST.getlist('alternate_types')
-                    alternate_data = []
-                    for i in range(len(alternate_answers)):
-                        alternate_data.append({
-                            'answer': alternate_answers[i],
-                            'type': alternate_types[i]
-                        })
+                    if len(alternate_answers) == 1 and not alternate_answers[0]:
+                        alternate_data = None
+                    else:
+                        alternate_data = []
+                        for i in range(len(alternate_answers)):
+                            alternate_data.append({
+                                'answer': alternate_answers[i],
+                                'type': alternate_types[i]
+                            })
                     question.answers = alternate_data
                     question.correct_answer = request.POST.get('correct_answer')
                 elif answer_type == 'match':
@@ -261,6 +268,8 @@ def save_test(request, test_id):
             test.name = request.POST.get('name')
             if 'cover-image' in request.FILES:
                 test.logo = request.FILES.get('cover-image')
+            else:
+                test.logo = None
             test.finished = True
             test.save()
             return redirect('library')

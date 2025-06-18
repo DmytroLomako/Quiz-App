@@ -35,6 +35,27 @@
                             </div>
                         </div>
                     </div>
+                    {% has_answer_image question answer as image %}
+                    {% if image %}
+                        <div class="answer-image-div">
+                            <div class="answer-image-actions" style="display: none;">
+                                <div>
+                                    <button type="button" class="image-answer-button"><img src="{% static 'CreateTest/img/picture.png' %}" alt=""></button>
+                                    <button type="button" class="delete-answer-image-button"><img src="{% static 'CreateTest/img/trash.png' %}" alt=""></button>
+                                </div>
+                            </div>
+                            <img class="img" src="{{ image.image.url }}" alt="">
+                        </div>
+                    {% else %}
+                        <div class="answer-image-div" style="display: none;">
+                            <div class="answer-image-actions" style="display: none;">
+                                <div>
+                                    <button type="button" class="image-answer-button"><img src="{% static 'CreateTest/img/picture.png' %}" alt=""></button>
+                                    <button type="button" class="delete-answer-image-button"><img src="{% static 'CreateTest/img/trash.png' %}" alt=""></button>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
                     <div class="answer-text-div">
                         <div class="auto-expanding-answer-div" contenteditable="true" placeholder="Введіть відповідь"></div>
                         <input type="hidden" name="answer" class="answer-input" value="{{ answer }}">

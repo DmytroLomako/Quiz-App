@@ -31,6 +31,19 @@ coverImage.addEventListener('mouseleave', function() {
     coverImage.querySelector('.cover-image-actions').style.display = 'none';
 })
 
+let imgElement = coverImage.querySelector('.img');
+if (imgElement) {
+    fetch(imgElement.src)
+        .then(res => res.blob())
+        .then(blob => {
+            const file = new File([blob], "cover-image.png", { type: "image/png" });
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            coverImageInput.files = dataTransfer.files;
+        })
+        .catch(err => console.error("Error creating file from image:", err));
+}
+
 function displayImage(){
     if (this.files) {
         const reader = new FileReader();

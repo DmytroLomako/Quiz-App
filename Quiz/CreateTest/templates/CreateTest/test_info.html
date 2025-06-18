@@ -69,17 +69,21 @@
                         {% str_to_list question.answers as answers %}
                         {% for answer in answers %}
                             {% check_answer_correct answers answer question.correct_answer as correct %}
-                            {% if correct == 'true' %}
-                                <div class="question-answer">
+                            {% has_answer_image question answer as image %}
+                            <div class="question-answer">
+                                {% if image %}
+                                    <div class="answer-image-wrapper">
+                                        <img class="answer-image" src="{{ image.image.url }}" alt="">
+                                    </div>
+                                {% endif %}
+                                {% if correct == 'true' %}
                                     <img src="{% static 'CreateTest/img/checkmark.png' %}" alt="">
                                     <p>{{ answer }}</p>
-                                </div>
-                            {% else %}
-                                <div class="question-answer">
+                                {% else %}
                                     <img src="{% static 'CreateTest/img/cross.png' %}" alt="">
                                     <p>{{ answer }}</p>
-                                </div>
-                            {% endif %}
+                                {% endif %}
+                            </div>
                         {% endfor %}
                     </div>
                 {% elif question.answer_type == 'fill_blank' %}
@@ -88,18 +92,22 @@
                         <img src="{% static 'CreateTest/img/checkmark.png' %}" alt="">
                         <p>{{ question.correct_answer }}</p> 
                     </div>
+                    {% str_to_list question.answers as answers %}
+                    {% if answers %}
                     <hr>
                     <h4>Альтернативні відповіді</h4>
                     <div class="blank-alternate-answers">
-                        {% str_to_list question.answers as answers %}
                         {% get_answers_from_list_dict answers as answers %}
+                        {% if answers %}
                         {% for answer in answers %}
                             <div class="blank-alternate-answer">
                                 <img src="{% static 'CreateTest/img/checkmark.png' %}" alt="">
                                 <p>{{ answer }}</p> 
                             </div>
                         {% endfor %}
+                        {% endif %}
                     </div>
+                    {% endif %}
                 {% elif question.answer_type == 'match' %}
                     <h4>Варіанти відповідей</h4>
                     {% str_to_list question.answers as answers %}
@@ -121,10 +129,12 @@
                 {% endif %}
             </div>
         {% endfor %}
-        <button class="add-button">
-            <img src="{% static 'CreateTest/img/plus_blue.svg' %}" alt="">
-            Додати питання
-        </button>
+        <a href="{% url 'select_question' test.id %}">
+            <button class="add-button">
+                <img src="{% static 'CreateTest/img/plus_blue.svg' %}" alt="">
+                Додати питання
+            </button>
+        </a>
     </main>
     <div class="overlay" style="display: none;">
         <form class="publish-form" method="post" action="{% url 'save_test' test.id %}" enctype="multipart/form-data">
@@ -141,7 +151,7 @@
                     </button>
                     <h2>Додати зображення обкладинки</h2>
                 </div>
-                <div class="cover-image" {% if test.logo == None and test.logo.url == None %} style="display: none;" {% endif %}>
+                <div class="cover-image" {% if not test.logo or not test.logo.url %} style="display: none;" {% endif %}>
                    <div class="cover-image-actions" style="display: none;">
                         <div>
                             <button type="button" class="image-cover-button"><img src="{% static 'CreateTest/img/picture.png' %}" alt=""></button>

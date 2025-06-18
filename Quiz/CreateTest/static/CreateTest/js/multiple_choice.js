@@ -43,7 +43,6 @@ answerTextDivs.forEach((div) => {
 let checkboxes = document.querySelectorAll('.checkbox');
 
 checkboxes.forEach((checkbox) => {
-    console.log(checkbox.classList.contains('checked'), checkbox.classList)
     if (!checkbox.classList.contains('checked') && !checkbox.classList.contains('unchecked')) {
         checkbox.classList.add('unchecked');
     }
@@ -131,3 +130,62 @@ imageAnswerButtons.forEach(button => {
         imageInput.click();
     });
 })
+
+let imageInputs = document.querySelectorAll('.answer-image');
+imageInputs.forEach((input) => {
+    input.addEventListener('change', (e) => {
+        let file = e.target.files[0];
+        let reader = new FileReader();
+        reader.onload = function (e) {
+            let imgElement = input.parentElement.nextElementSibling.querySelector('.img');
+            if (!imgElement) {
+                imgElement = document.createElement('img');
+                imgElement.classList.add('img');
+                console.log(input.parentElement, input.parentElement.nextElementSibling)
+                input.parentElement.nextElementSibling.appendChild(imgElement);
+            }
+            imageIconDiv.style.display = 'none';
+            imgElement.src = e.target.result;
+            input.parentElement.nextElementSibling.style.display = 'flex'
+        };
+        reader.readAsDataURL(file);
+    });
+})
+let answerImageDivs = document.querySelectorAll('.answer-image-div');
+answerImageDivs.forEach((div) => {
+    div.addEventListener('mouseenter', function(){
+        div.querySelector('.answer-image-actions').style.display = 'flex';
+    })
+    div.addEventListener('mouseleave', function(){
+        div.querySelector('.answer-image-actions').style.display = 'none';
+    })
+})
+let deleteAnswerImageButtons = document.querySelectorAll('.delete-answer-image-button');
+deleteAnswerImageButtons.forEach((button) => {
+    button.addEventListener('click', function(){
+        console.log('click')
+        let imgElement = button.parentElement.parentElement.parentElement.querySelector('.img');
+        if (imgElement) {
+            imgElement.remove();
+            button.parentElement.parentElement.style.display = 'none'
+        }
+        button.parentElement.parentElement.parentElement.parentElement.querySelector('.answer-image').value = '';
+        button.parentElement.parentElement.parentElement.style.display = 'none';
+    })
+})
+let answerDiv = document.querySelector('.answers-div');
+let answerImageElems = answerDiv.querySelectorAll('.img')
+console.log(answerDiv)
+if (answerImageElems.length > 0) {
+    answerImageElems.forEach((imgElement) => {
+        fetch(imgElement.src)
+            .then(res => res.blob())
+            .then(blob => {
+                const file = new File([blob], "cover-image.png", { type: "image/png" });
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+                imgElement.parentElement.parentElement.querySelector('.answer-image').files = dataTransfer.files;
+            })
+            .catch(err => console.error("Error creating file from image:", err));
+    })
+}
