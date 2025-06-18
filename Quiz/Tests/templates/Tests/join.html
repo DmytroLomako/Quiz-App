@@ -8,16 +8,14 @@
     <link rel="stylesheet" href="{% static 'css/join.css' %}">
 </head>
 <body>
-    <div>
+    <main style="background-image: url('{% static 'img/background.png' %}');">
         <h1>QuizMaster</h1>
-        <form action="" method="post">
+        <form action="" method="post" class="join-form">
             {% csrf_token %}
-            <input type="number" placeholder="Введіть код" name="code" class="code-input">
-            {% if error %}
-                <p style="color: red;">{{ error }}</p>
-            {% endif %}
+            <input type="number" placeholder="Код гри" name="code" class="code-input" {% if error %} style="border-color: red;" {% endif %}>
+            
             <button>Ввести</button>
         </form>
-    </div>
+    </main>
 </body>
 </html>

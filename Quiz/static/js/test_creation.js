@@ -13,7 +13,6 @@ selectElement.addEventListener('change', function() {
             } else {
                 redirectUrl[redirectUrl.length - 3] = 'multiple_choice';
             }
-            console.log(redirectUrl)
             break;
         case 'blank':
             redirectUrl = window.location.href.split('/');

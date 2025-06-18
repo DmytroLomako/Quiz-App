@@ -15,27 +15,20 @@ class Result(models.Model):
             return f'{self.user.username} - {self.start_test.test.name} - {self.result}'
         return f'{self.user_not_auth} - {self.start_test.test.name} - {self.result}'
     
-class ResultNotAuth(models.Model):
-    username = models.TextField()
+class AdminResult(models.Model):
+    admin = models.ForeignKey(User, on_delete=models.CASCADE)
     test = models.ForeignKey(Test, on_delete=models.CASCADE)
-    result = models.TextField()
-    
-    def __str__(self):
-        return f'{self.username}'
+    date = models.DateTimeField(auto_now_add=True)
     
 class GlobalResult(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     test = models.ForeignKey(Test, on_delete=models.CASCADE, null=True)
     results = models.TextField()
+    result_url = models.CharField(max_length=50, default=None)
+    admin_result = models.ForeignKey(AdminResult, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return f'{self.user.username}'
-    
-class AdminResult(models.Model):
-    admin = models.ForeignKey(User, on_delete=models.CASCADE)
-    results = models.TextField()
-    test = models.ForeignKey(Test, on_delete=models.CASCADE)
-    date = models.DateTimeField(auto_now_add=True)
     
 class StartTest(models.Model):
     admin = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -48,3 +41,13 @@ class StartTest(models.Model):
     
     def count_question(self):
         return self.test.count_question()
+    
+class ResultNotAuth(models.Model):
+    username = models.TextField()
+    test = models.ForeignKey(Test, on_delete=models.CASCADE)
+    result = models.TextField()
+    result_url = models.CharField(max_length=50, default=None)
+    admin_result = models.ForeignKey(AdminResult, on_delete=models.CASCADE, null=True)
+    
+    def __str__(self):
+        return f'{self.username}'

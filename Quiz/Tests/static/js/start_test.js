@@ -22,6 +22,7 @@ function workSocket(){
     socket = new WebSocket(socketUrl)
     socket.onmessage = function(event){
         let data = JSON.parse(event.data)
+        console.log('received', data)
         if(data['type'] == 'user_disconnect' && data['receiver'] == 'user'){
             if (data['username'] == document.getElementById('username').textContent){
                 let cookie = `quiz_${quizCode}`
@@ -46,6 +47,12 @@ function workSocket(){
                     let question = document.createElement('h2')
                     question.textContent = data['question']
                     questionDiv.append(question)
+                    if (data.image){
+                        let questionImage = document.createElement('img')
+                        questionImage.src = data.image
+                        questionImage.classList.add('question-image')
+                        questionDiv.append(questionImage)
+                    }
                     if (data['answer_type'] === 'multiple_choice') {
                         if (response.user_result){
                             if (!response.question_finished){
@@ -367,6 +374,25 @@ function workSocket(){
                 })
 
             }
+        } else if(data['type'] == 'stop_test'){
+            let auth = document.getElementById('auth').value
+            if (auth == 'True'){
+                let userId = document.getElementById('userId').value
+                data['list_results_auth'].forEach(function(result){
+                    if (result.user == userId){
+                        window.location.href = `/view_user_result/${result.result_url}`
+                    }
+                    console.log(result)
+                })
+            } else {
+                let username = document.getElementById('username').textContent
+                data['list_results_not_auth'].forEach(function(result){
+                    if (result.username == username){
+                        window.location.href = `/view_user_result/${result.result_url}`
+                    }
+                    console.log(result)
+                })
+            }
         }
     }
 }
@@ -390,12 +416,22 @@ if(existUser || auth == 'True'){
     }
     workSocket()
 } else {
+    let main = document.querySelector('.main')
     let form = document.createElement('form')
+    let mainBlock = document.createElement('main')
+    mainBlock.style.backgroundImage = `url(/static/img/background.png)`
+    mainBlock.innerHTML += '<h1>QuizMaster</h1>'
+    main.style.display = 'none'
+    main.style.backgroundImage = `url(${main.getAttribute('image')})`
+    form.classList.add('join-form')
+    document.head.innerHTML += `<link rel="stylesheet" href="/static/css/join.css">`
     form.innerHTML = `
-        <input type="text" name="name" placeholder="Ваше ім'я">
+        <input type="text" class="code-input" name="name" placeholder="Ваше ім'я">
         <button id="sendName">Відправити</button>
     `
-    document.querySelector('body').append(form)
+    document.body.append(mainBlock)
+    mainBlock.append(form)
+    console.log(document.querySelector('body').innerHTML)
     form.addEventListener('submit', (e)=>{
         e.preventDefault()
         let name = e.target[0].value
@@ -405,8 +441,11 @@ if(existUser || auth == 'True'){
         document.body.append(usernameHeader)
         document.cookie = `quiz_${quizCode}=${name}; path=/;`
         socketUrl += `?name=${name}`
+        main.style.display = 'block'
+        main.style.backgroundImage = ''
+        document.head.innerHTML = document.head.innerHTML.replace('<link rel="stylesheet" href="/static/css/join.css">', '');
         workSocket()
-        form.remove()
+        mainBlock.remove()
     })
 }
 

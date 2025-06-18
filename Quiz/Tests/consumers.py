@@ -1,13 +1,22 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
-import json
+import json, random, string
 from .models import *
 from asgiref.sync import sync_to_async
 from channels.db import database_sync_to_async
 from urllib.parse import parse_qs
 from django.contrib.auth.models import User
+from django.forms.models import model_to_dict
 from transliterate import translit, get_available_language_codes
+import random
 
-
+def generate_code(length):
+    list_symbols = string.ascii_letters + string.digits
+    code = ''
+    for i in range(length):
+        code += random.choice(list_symbols)
+    if GlobalResult.objects.filter(result_url=code).exists() or ResultNotAuth.objects.filter(result_url=code).exists():
+        return generate_code(length)
+    return code
 
 class QuizConsumers(AsyncWebsocketConsumer):
     async def connect(self):
@@ -38,7 +47,6 @@ class QuizConsumers(AsyncWebsocketConsumer):
                         if self.user.is_authenticated:
                             await sync_to_async(start_test.users.add)(self.user)
                         else:
-                            print(start_test.users_not_auth)
                             if start_test.users_not_auth != None:
                                 start_test.users_not_auth += f'{username[0]}%,'
                             else:
@@ -62,9 +70,7 @@ class QuizConsumers(AsyncWebsocketConsumer):
             if id:
                 self.user_group_name = f'user_{id}'
             else:
-                print(username)
                 self.user_group_name = f'not_auth_user_{translit(username[0], 'ru', 'en')}'
-                print(self.user_group_name)
             await self.channel_layer.group_add(
                 self.user_group_name,
                 self.channel_name
@@ -94,6 +100,14 @@ class QuizConsumers(AsyncWebsocketConsumer):
             self.channel_name
         )
         
+    @database_sync_to_async
+    def get_users(self, start_test):
+        return list(start_test.users.all())
+    
+    @database_sync_to_async
+    def get_questions(self, test):
+        return list(Question.objects.filter(test=test))
+        
     async def receive(self, text_data=None):
         async def stop_question():
             start_test = await self.get_test_admin(True)
@@ -120,9 +134,7 @@ class QuizConsumers(AsyncWebsocketConsumer):
                 if self.user.is_authenticated:
                     await sync_to_async(start_test.users.remove)(self.user)
                 else:
-                    print(start_test.users_not_auth)
                     usernames = start_test.users_not_auth.split('%,')
-                    print(usernames, text_data['username'])
                     for name in usernames[:-1]:
                         if name == text_data['username']:
                             usernames.remove(name)
@@ -225,16 +237,65 @@ class QuizConsumers(AsyncWebsocketConsumer):
         elif text_data['type'] == 'stop_test':
             start_test = await self.get_test_admin(True)
             results = await sync_to_async(Result.objects.filter)(start_test = start_test)
+            test = await sync_to_async(getattr)(start_test, 'test')
+            questions = await self.get_questions(test)
             admin_result = await sync_to_async(AdminResult.objects.create)(
                 admin = self.user,
-                results = '',
-                test = await sync_to_async(getattr)(start_test, 'test')
+                test = test
             )
+            await sync_to_async(admin_result.save)()
+            users = await self.get_users(start_test)
+            list_results_auth = []
+            list_results_not_auth = []
+            for user in users:
+                user_results = await sync_to_async(Result.objects.filter)(start_test = start_test, user=user)
+                code = await sync_to_async(generate_code)(50)
+                text_user_result = ''
+                for question in questions:
+                    user_question_result = await sync_to_async(user_results.filter(question=question).first)()
+                    if user_question_result:
+                        text_user_result += f'{user_question_result.result}|||'
+                    else:
+                        text_user_result += 'None|||'
+                user_result = await sync_to_async(GlobalResult.objects.create)(
+                    user = user,
+                    test = test,
+                    results = text_user_result,
+                    result_url = code,
+                    admin_result = admin_result
+                )
+                await sync_to_async(user_result.save)()
+                list_results_auth.append(model_to_dict(user_result))
+            if start_test.users_not_auth:
+                for user in start_test.users_not_auth.split('%,'):
+                    if user:
+                        user_results = await sync_to_async(Result.objects.filter)(start_test = start_test, user_not_auth=user)
+                        code = await sync_to_async(generate_code)(50)
+                        text_user_result = ''
+                        for question in questions:
+                            user_question_result = await sync_to_async(user_results.filter(question=question).first)()
+                            if user_question_result:
+                                text_user_result += f'{user_question_result.result}|||'
+                            else:
+                                text_user_result += 'None|||'
+                        user_result = await sync_to_async(ResultNotAuth.objects.create)(
+                            username = user,
+                            test = test,
+                            result = text_user_result,
+                            result_url = code,
+                            admin_result = admin_result
+                        )
+                        await sync_to_async(user_result.save)()
+                        list_results_not_auth.append(model_to_dict(user_result))
+            await sync_to_async(start_test.delete)()
             await self.channel_layer.group_send(
                 self.quiz_group_name,
                 {
                     'type': 'send_data',
-                    'data_type': 'stop_test'
+                    'data_type': 'stop_test',
+                    'id_admin': admin_result.id,
+                    'list_results_not_auth': list_results_not_auth,
+                    'list_results_auth': list_results_auth
                 }
             )
             

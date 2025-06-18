@@ -5,14 +5,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Початок тесту</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
     <link rel="stylesheet" href="{% static 'css/start_test_admin.css' %}">
     <script src="{% static 'js/jquery.js' %}" defer></script>
     <script src="{% static 'js/start_test_admin.js' %}" defer></script>
 </head>
 <body>
     {% csrf_token %}
-    <h1 id="test_code">{{ test.code }}</h1>
-    <button id="startTest">Почати тест</button>
+    <header>
+        <h1>QuizMaster</h1>
+        <button>Закінчити</button>
+    </header>
+    <div class="head">
+        <div class="link-div">
+            <div class="link-div-head">
+                <p>Посилання:</p>
+                <button class="copy"><img src="{% static 'img/copy.png' %}" alt=""></button>
+            </div>
+            <h1>join/{{ test.code }}</h1>
+        </div>
+        <div class="code-div">
+            <div class="code-div-head">
+                <p>Код гри:</p>
+            </div>
+            <h1 id="test-code">{{ test.code }}</h1>
+        </div>
+    </div>
+    <div class="start-test-button-div">
+        <button id="startTest">Почати тест</button>
+    </div>
     <div class="users">
         {% for correct, user in auth_users %}
             <p {% if correct %} class="answered" {% endif %}>

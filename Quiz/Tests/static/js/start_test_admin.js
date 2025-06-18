@@ -1,4 +1,4 @@
-const quizCode = document.getElementById('test_code').textContent
+const quizCode = document.getElementById('test-code').textContent
 const socketUrl = `ws://${window.location.host}/ws/quiz/${quizCode}/`
 let usersDiv = document.querySelector('.users')
 let startTest = document.getElementById('startTest')
@@ -77,6 +77,8 @@ socket.onmessage = function(event){
                 }
             }
         })
+    } else if(data['type'] == 'stop_test'){
+        window.location.href = `/view_result/${data['id_admin']}`
     }
 }
 
