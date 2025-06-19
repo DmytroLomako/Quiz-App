@@ -78,7 +78,7 @@ socket.onmessage = function(event){
             }
         })
     } else if(data['type'] == 'stop_test'){
-        window.location.href = `/view_result/${data['id_admin']}`
+        window.location.href = `/results/view_result/${data['id_admin']}`
     }
 }
 

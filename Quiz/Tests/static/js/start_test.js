@@ -181,7 +181,10 @@ function workSocket(){
                         } 
                         if (response.question_finished){
                             let correctAnswer = data['correct_answer']
-                            let alternateAnswers = JSON.parse(data.answers.replace(/'/g, '"'))
+                            let alternateAnswers = []
+                            if (data.answers) {
+                                alternateAnswers = JSON.parse(data.answers.replace(/'/g, '"'))
+                            }
                             let correct = false
                             alternateAnswers.forEach(function(altAns){
                                 if (altAns.type == 'exactly'){
@@ -340,7 +343,10 @@ function workSocket(){
             } else if (data['question_type'] == 'fill_blank') {
                 let userAnswer = document.querySelector('.fill_blank_input')
                 let correctAnswer = data['correct_answer']
-                let alternateAnswers = JSON.parse(data.answer.replace(/'/g, '"'))
+                let alternateAnswers = []
+                if (data.answer){
+                    alternateAnswers = JSON.parse(data.answer.replace(/'/g, '"'))
+                }
                 let correct = false
                 alternateAnswers.forEach(function(altAns){
                     if (altAns.type == 'exactly'){
@@ -380,7 +386,7 @@ function workSocket(){
                 let userId = document.getElementById('userId').value
                 data['list_results_auth'].forEach(function(result){
                     if (result.user == userId){
-                        window.location.href = `/view_user_result/${result.result_url}`
+                        window.location.href = `/results/view_user_result/${result.result_url}`
                     }
                     console.log(result)
                 })
@@ -388,7 +394,7 @@ function workSocket(){
                 let username = document.getElementById('username').textContent
                 data['list_results_not_auth'].forEach(function(result){
                     if (result.username == username){
-                        window.location.href = `/view_user_result/${result.result_url}`
+                        window.location.href = `/results/view_user_result/${result.result_url}`
                     }
                     console.log(result)
                 })
@@ -405,6 +411,7 @@ if(existUser || auth == 'True'){
         socketUrl += `?socket_exist=True`
         if (auth == 'False'){
             let name = cookies.find(cookie => cookie.trim().startsWith(`quiz_${quizCode}=`)).split('=')[1]
+            socketUrl += `&name=${name}`
             let usernameHeader = document.createElement('h3')
             usernameHeader.id = 'username'
             usernameHeader.textContent = name

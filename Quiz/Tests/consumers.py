@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 from django.forms.models import model_to_dict
 from transliterate import translit, get_available_language_codes
 import random
+from Results.models import *
 
 def generate_code(length):
     list_symbols = string.ascii_letters + string.digits
@@ -40,6 +41,9 @@ class QuizConsumers(AsyncWebsocketConsumer):
                 username = self.user.username
             else:
                 username = params.get('name', '')
+            print(username)
+            print(2)
+            print(params)
             socket_exist = params.get('socket_exist', False)
             if not socket_exist:
                 try:
@@ -70,6 +74,7 @@ class QuizConsumers(AsyncWebsocketConsumer):
             if id:
                 self.user_group_name = f'user_{id}'
             else:
+                print(username)
                 self.user_group_name = f'not_auth_user_{translit(username[0], 'ru', 'en')}'
             await self.channel_layer.group_add(
                 self.user_group_name,
@@ -260,7 +265,7 @@ class QuizConsumers(AsyncWebsocketConsumer):
                 user_result = await sync_to_async(GlobalResult.objects.create)(
                     user = user,
                     test = test,
-                    results = text_user_result,
+                    result = text_user_result,
                     result_url = code,
                     admin_result = admin_result
                 )
