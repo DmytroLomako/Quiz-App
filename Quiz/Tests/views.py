@@ -28,11 +28,17 @@ def render_start_test(request, code):
                         if result.user_not_auth == user:
                             list_not_auth_users[index] = [True, user]
                 count_question = test.count_question()
+                count_users = str(len(list_users) + len(list_not_auth_users))
+                if count_users[-1] in '1234':
+                    count_users = count_users + ' учасник'
+                else:
+                    count_users = count_users + ' учасників'
                 return render(request, 'Tests/start_test_admin.html', context={
                     'test': test, 
                     'not_auth_users': list_not_auth_users, 
                     'auth_users': list_users,
-                    'last_question': count_question -1 <= test.current_question
+                    'last_question': count_question -1 <= test.current_question,
+                    'count_users': count_users
                 })
         return render(request, 'Tests/start_test.html', context={'test': test, 'user': request.user})
     else:

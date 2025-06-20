@@ -2,6 +2,9 @@ const quizCode = document.getElementById('test-code').textContent
 const socketUrl = `ws://${window.location.host}/ws/quiz/${quizCode}/`
 let usersDiv = document.querySelector('.users')
 let startTest = document.getElementById('startTest')
+let startTestButtonDiv = document.querySelector('.start-test-button-div')
+let head = document.querySelector('.head')
+let countUsers = document.querySelector('.users-info').querySelector('h1')
 
 const socket = new WebSocket(socketUrl)
 
@@ -17,14 +20,17 @@ socket.onmessage = function(event){
         if(Array.isArray(username)){
             username = username[0]
         }
+        countUsers.textContent = (parseInt(countUsers.textContent.split(' ')[0]) + 1) + ' ' + countUsers.textContent.split(' ')[1]
         let user = document.createElement('p')
-        user.innerHTML += `<input type="hidden" class="userId" value="${userId}"> <b>${username}</b> <button class="delete-user">×</button>`
+        user.innerHTML += `<input type="hidden" class="userId" value="${userId}"> <img src="/static/img/avatar.png" alt=""> <b>${username}</b> <button class="delete-user" style="display: none;"><img src="/static/CreateTest/img/trash.png" alt=""></button>`
         let buttonDelete = user.querySelector('.delete-user')
         buttonDelete.addEventListener('click', deleteUser)
         usersDiv.append(user)
+        deleteUser()
     } else if(data['type'] == 'user_disconnect' && data['receiver'] == 'admin'){
         let username = data['username']
         let users = usersDiv.querySelectorAll('b')
+        countUsers.textContent = (parseInt(countUsers.textContent.split(' ')[0]) - 1) + ' ' + countUsers.textContent.split(' ')[1]
         users.forEach(user => {
             if(user.textContent == username){
                 user.parentElement.remove()
@@ -61,20 +67,29 @@ socket.onmessage = function(event){
             success: function(response){
                 console.log(response)
                 let data = response.question
-                let questionDiv = document.querySelector('.question-block')
+                if (data.question_number == 0){
+                    head.innerHTML = `<h1 style="display: none;" id="test-code">${ quizCode }</h1>`
+                }
+                let questionDiv = document.querySelector('.question-div')
                 if (questionDiv) {
                     questionDiv.remove()
                 }
                 questionDiv = document.createElement('div')
-                questionDiv.classList.add('question-block')
-                questionDiv.innerHTML = `<h2>${data['question']}</h2>`
-                document.body.append(questionDiv)
+                questionDiv.classList.add('question-div')
+                let question = document.createElement('div')
+                question.classList.add('question')
+                question.textContent = data['question']
+                questionDiv.append(question)
+                let answersDiv = document.createElement('div')
+                answersDiv.classList.add('answers')
                 if ( data.answer_type == 'multiple_choice' ){
                     let answers = JSON.parse(data['answers'].replace(/'/g, '"'))
                     answers.forEach(function(answer, index){
-                        questionDiv.innerHTML += `<div class='answer'>${answer}</div>`
+                        answersDiv.innerHTML += `<div class="answer">${ answer }</div>`
                     })
                 }
+                questionDiv.appendChild(answersDiv)
+                head.appendChild(questionDiv)
             }
         })
     } else if(data['type'] == 'stop_test'){
@@ -112,7 +127,7 @@ function toggleStopQuestion(button, send=true){
         nextButton.classList.add('next-question-button')
         nextButton.addEventListener('click', () => {sendNext(nextButton)})
     }
-    document.body.append(nextButton)
+    startTestButtonDiv.append(nextButton)
     if (send){
         socket.send(JSON.stringify({
             'type': 'stop_question'
@@ -126,16 +141,19 @@ function sendStop(){
     }))
 }
 
-startTest.addEventListener('click', () => {
-    socket.send(JSON.stringify({
-        'type': 'start_test'
-    }))
-    let buttonStop = document.createElement('button')
-    buttonStop.textContent = 'Зупинити питання'
-    buttonStop.classList.add('stop-question-button')
-    document.body.append(buttonStop)
-    buttonStop.addEventListener('click', () => {toggleStopQuestion(buttonStop)})
-})
+if (startTest) {
+    startTest.addEventListener('click', () => {
+        socket.send(JSON.stringify({
+            'type': 'start_test'
+        }))
+        startTest.remove()
+        let buttonStop = document.createElement('button')
+        buttonStop.textContent = 'Зупинити питання'
+        buttonStop.classList.add('stop-question-button')
+        startTestButtonDiv.append(buttonStop)
+        buttonStop.addEventListener('click', () => {toggleStopQuestion(buttonStop)})
+    })
+}
 
 let buttonStop = document.querySelector('.stop-question-button')
 if (buttonStop) {
@@ -148,7 +166,7 @@ function sendNext(nextButton){
     let buttonStop = document.createElement('button')
     buttonStop.textContent = 'Зупинити питання'
     buttonStop.classList.add('stop-question-button')
-    document.body.append(buttonStop)
+    startTestButtonDiv.append(buttonStop)
     buttonStop.addEventListener('click', () => {toggleStopQuestion(buttonStop)})
     socket.send(JSON.stringify({
         'type': 'next_question'
@@ -161,4 +179,44 @@ if (buttonNext){
 let buttonStopTest = document.querySelector('.stop-test-button')
 if (buttonStopTest){
     buttonStopTest.addEventListener('click', sendStop)
+}
+
+function deleteUser(){
+    let userNames = usersDiv.querySelectorAll('p')
+    userNames.forEach(user => {
+        let deleteUser = user.querySelector('.delete-user')
+        user.addEventListener('mouseenter', () => {
+            deleteUser.style.display = 'block'
+            user.querySelector('b').style.filter = 'blur(0.6px)'
+            user.querySelector('img').style.filter = 'blur(0.6px)'
+        })
+        user.addEventListener('mouseleave', () => {
+            deleteUser.style.display = 'none'
+            user.querySelector('b').style.filter = 'none'
+            user.querySelector('img').style.filter = 'none'
+        })
+    })
+}
+deleteUser()
+
+let linkDiv = document.querySelector('.link-div')
+if (linkDiv){
+    let overlayLink = linkDiv.querySelector('.overlay-link')
+    console.log(overlayLink)
+    linkDiv.addEventListener('mouseenter', () => {
+        overlayLink.style.display = 'flex'
+        linkDiv.querySelector('.link-div-head').style.filter = 'blur(0.6px)'
+        linkDiv.querySelector('h1').style.filter = 'blur(0.8px)'
+    })
+    linkDiv.addEventListener('mouseleave', () => {
+        overlayLink.style.display = 'none'
+        linkDiv.querySelector('.link-div-head').style.filter = 'none'
+        linkDiv.querySelector('h1').style.filter = 'none'
+    })
+    overlayLink.addEventListener('click', () => {
+        navigator.clipboard.writeText(window.location.href)
+        overlayLink.style.display = 'none'
+        linkDiv.querySelector('.link-div-head').style.filter = 'none'
+        linkDiv.querySelector('h1').style.filter = 'none'
+    })
 }

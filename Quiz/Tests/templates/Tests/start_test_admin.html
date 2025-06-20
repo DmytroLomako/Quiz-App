@@ -17,49 +17,70 @@
         <button>Закінчити</button>
     </header>
     <div class="head">
-        <div class="link-div">
-            <div class="link-div-head">
-                <p>Посилання:</p>
-                <button class="copy"><img src="{% static 'img/copy.png' %}" alt=""></button>
+        {% if test.current_question == -1 %}
+            <div class="link-div">
+                <div class="link-div-head">
+                    <p>Посилання:</p>
+                    <button class="copy"><img src="{% static 'img/copy.png' %}" alt=""></button>
+                </div>
+                <h1>join/{{ test.code }}</h1>
+                <div class="overlay-link" style="display: none;">
+                    <img src="{% static 'img/copy-white.png' %}" alt="">
+                </div>
             </div>
-            <h1>join/{{ test.code }}</h1>
-        </div>
-        <div class="code-div">
-            <div class="code-div-head">
-                <p>Код гри:</p>
+            <div class="code-div">
+                <div class="code-div-head">
+                    <p>Код гри:</p>
+                </div>
+                <h1 id="test-code">{{ test.code }}</h1>
             </div>
-            <h1 id="test-code">{{ test.code }}</h1>
-        </div>
+        {% else %}
+            <h1 style="display: none;" id="test-code">{{ test.code }}</h1>
+            <div class="question-div">
+                <div class="question">
+
+                </div>
+                <div class="answers">
+
+                </div>
+            </div>
+        {% endif %}
     </div>
     <div class="start-test-button-div">
-        <button id="startTest">Почати тест</button>
-    </div>
-    <div class="users">
-        {% for correct, user in auth_users %}
-            <p {% if correct %} class="answered" {% endif %}>
-                <input type="hidden" class="userId" value="{{ user.id }}">
-                <b>{{ user }}</b> 
-                <button class="delete-user">×</button>
-            </p>
-        {% endfor %}
-        {% for correct, user in not_auth_users %}
-            <p {% if correct %} class="answered" {% endif %}>
-                <b>{{ user }}</b> 
-                <button class="delete-user">×</button>
-            </p>
-        {% endfor %}
-    </div>
-    <input type="hidden" name="" id="lastQuestion" value="{{ last_question }}">
-    {% if test.current_question != -1 %}
-        {% if test.question_finished %}
-            {% if last_question %}
-                <button class="stop-test-button">Завершити тест</button>
+        {% if test.current_question != -1 %}
+            {% if test.question_finished %}
+                {% if last_question %}
+                    <button class="stop-test-button">Завершити тест</button>
+                {% else %}
+                    <button class="next-question-button">Наступне питання</button>
+                {% endif %}
             {% else %}
-                <button class="next-question-button">Наступне питання</button>
+                <button class="stop-question-button">Зупинити питання</button>
             {% endif %}
         {% else %}
-            <button class="stop-question-button">Зупинити питання</button>
+            <button id="startTest">Почати тест</button>
         {% endif %}
-    {% endif %}
+    </div>
+    <div class="users-info">
+        <h1>{{ count_users }}</h1>
+        <div class="users">
+            {% for correct, user in auth_users %}
+                <p {% if correct %} class="answered" {% endif %}>
+                    <input type="hidden" class="userId" value="{{ user.id }}">
+                    <img src="{% static 'img/avatar.png' %}" alt="">
+                    <b>{{ user }}</b> 
+                    <button class="delete-user" style="display: none;"><img src="{% static 'CreateTest/img/trash.png' %}" alt=""></button>
+                </p>
+            {% endfor %}
+            {% for correct, user in not_auth_users %}
+                <p {% if correct %} class="answered" {% endif %}>
+                    <img src="{% static 'img/avatar.png' %}" alt="">
+                    <b>{{ user }}</b> 
+                    <button class="delete-user" style="display: none;"><img src="{% static 'CreateTest/img/trash.png' %}" alt=""></button>
+                </p>
+            {% endfor %}
+        </div>
+    </div>
+    <input type="hidden" name="" id="lastQuestion" value="{{ last_question }}">
 </body>
 </html>
