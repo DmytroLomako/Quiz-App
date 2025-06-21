@@ -1,0 +1,37 @@
+#red{
+    width: 200px;
+    height: 20px;
+    background-color: red;
+    display: flex;
+    align-items: center;
+    border-radius: 10px;
+}
+#green{
+    background-color: green;
+    height: 20px;
+    border-radius: 10px;
+}
+#percent{
+    width: 40px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    color: black;
+    font-size: 15px;
+    border-radius: 10px;
+    transform: translateX(-20px);
+}
+
+.status-True{
+    border-left: solid 3px green;
+}
+
+.status-False{
+    border-left: solid 3px red;
+}
+
+.status-None{
+    border-left: solid 3px gray;
+}

@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}User Result{% endblock %}
+
+{% block links %}
+    <link rel="stylesheet" href="{% static 'Results/css/user_result.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="result">
+        <h1>{{ username }}</h1>
+        <h2>Рейтинг - {{ place }}</h2>
+        <h3>
+            Відсоток: 
+            <div id="red">
+                <div style="width: {{ percent }}%;" id="green"></div>
+                <span id="percent">{{ percent }}%</span>
+            </div>
+        </h3>
+        <h1>Статистика</h1>
+        <div>
+            <b>{{ count_correct }}</b> Правильний
+        </div>
+        <div>
+            <b>{{ count_incorrect }}</b> Неправильний
+        </div>
+        <div>
+            <b>{{ count_none }}</b> Пропущений
+        </div>
+        <h1>Питання</h1>
+        <div class="questions">
+            {% for question in list_questions %}
+                <div class="question status-{{ question.status }}">
+                    <h2>{{ question.question.question }}</h2>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

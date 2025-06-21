@@ -29,8 +29,10 @@ def render_start_test(request, code):
                             list_not_auth_users[index] = [True, user]
                 count_question = test.count_question()
                 count_users = str(len(list_users) + len(list_not_auth_users))
-                if count_users[-1] in '1234':
+                if count_users == '1':
                     count_users = count_users + ' учасник'
+                elif count_users[-1] in '234' and (len(count_users) == 1 or count_users[-2] != '1'):
+                    count_users = count_users + ' учасники'
                 else:
                     count_users = count_users + ' учасників'
                 return render(request, 'Tests/start_test_admin.html', context={

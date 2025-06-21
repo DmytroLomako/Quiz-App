@@ -20,22 +20,43 @@ socket.onmessage = function(event){
         if(Array.isArray(username)){
             username = username[0]
         }
-        countUsers.textContent = (parseInt(countUsers.textContent.split(' ')[0]) + 1) + ' ' + countUsers.textContent.split(' ')[1]
         let user = document.createElement('p')
         user.innerHTML += `<input type="hidden" class="userId" value="${userId}"> <img src="/static/img/avatar.png" alt=""> <b>${username}</b> <button class="delete-user" style="display: none;"><img src="/static/CreateTest/img/trash.png" alt=""></button>`
         let buttonDelete = user.querySelector('.delete-user')
         buttonDelete.addEventListener('click', deleteUser)
         usersDiv.append(user)
-        deleteUser()
-    } else if(data['type'] == 'user_disconnect' && data['receiver'] == 'admin'){
-        let username = data['username']
-        let users = usersDiv.querySelectorAll('b')
-        countUsers.textContent = (parseInt(countUsers.textContent.split(' ')[0]) - 1) + ' ' + countUsers.textContent.split(' ')[1]
-        users.forEach(user => {
-            if(user.textContent == username){
-                user.parentElement.remove()
-            }
-        })
+        let count_users = usersDiv.querySelectorAll('b').length
+        if (count_users == 1){
+            count_users = '1 учасник'
+        }else if ('234'.includes(String(count_users)[String(count_users).length - 1]) && (String(count_users).length == 1 || String(count_users)[String(count_users).length - 2] != '1')){
+            count_users = count_users + ' учасники'
+        }
+        else{
+            count_users = count_users + ' учасників'
+        }
+        countUsers.textContent = count_users
+        deleteUserHover()
+    } else if(data['type'] == 'user_disconnect' ){
+
+        if (data['receiver'] == 'admin'){
+            let username = data['username']
+            let users = usersDiv.querySelectorAll('b')
+            users.forEach(user => {
+                if(user.textContent == username){
+                    user.parentElement.remove()
+                }
+            })
+        }
+        let count_users = usersDiv.querySelectorAll('b').length
+        if (count_users == 1){
+            count_users = count_users + ' учасник'
+        } else if ('234'.includes(String(count_users)[String(count_users).length - 1]) && (String(count_users).length == 1 || String(count_users)[String(count_users).length - 2] != '1')){
+            count_users = count_users + ' учасники'
+        }
+        else{
+            count_users = count_users + ' учасників'
+        }
+        countUsers.textContent = count_users
     } else if(data['type'] == 'admin_user_answer'){
         console.log('')
         if (data['not_answer_count'] == 0){
@@ -181,7 +202,7 @@ if (buttonStopTest){
     buttonStopTest.addEventListener('click', sendStop)
 }
 
-function deleteUser(){
+function deleteUserHover(){
     let userNames = usersDiv.querySelectorAll('p')
     userNames.forEach(user => {
         let deleteUser = user.querySelector('.delete-user')
@@ -197,7 +218,7 @@ function deleteUser(){
         })
     })
 }
-deleteUser()
+deleteUserHover()
 
 let linkDiv = document.querySelector('.link-div')
 if (linkDiv){
@@ -220,3 +241,5 @@ if (linkDiv){
         linkDiv.querySelector('h1').style.filter = 'none'
     })
 }
+
+

@@ -6,9 +6,6 @@
     color: #666666;
     background-color: #E2E2E2;
 }
-.answer{
-    cursor: pointer;
-}
 
 body{
     flex-direction: column;
