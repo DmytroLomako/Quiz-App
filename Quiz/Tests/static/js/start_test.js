@@ -2,12 +2,41 @@ const quizCode = document.getElementById('test_code').textContent
 let socketUrl = `ws://${window.location.host}/ws/quiz/${quizCode}/`
 let existUser = false
 let socket = null
+let waitingText = document.querySelector('.waiting-text')
+let header = document.querySelector('header')
+const answerColors = ['#EFA929', '#29BDEF', '#8529EF', '#EF7229', '#3AAB23']
+let answerMatchColors = ['#efaa2abf', '#29bdefbf', '#8529efbf', '#ef7229bf', '#3aab23bf'];
 
 let cookies = document.cookie.split(';')
 for (let index = 0; index < cookies.length; index++) {
     if(`quiz_${quizCode}` == cookies[index].split('=')[0].trim()){
         existUser = true
         break
+    }
+}
+
+function setCheckboxes(){
+    let checkboxes = document.querySelectorAll('.checkbox');
+    checkboxes.forEach((checkbox) => {
+        if (!checkbox.classList.contains('checked') && !checkbox.classList.contains('unchecked')) {
+            checkbox.classList.add('unchecked');
+        }
+        checkbox.addEventListener('click', toggleCheckbox);
+    });
+
+}
+function toggleCheckbox(event) {
+    const checkbox = event.currentTarget;
+    if (checkbox.classList.contains('checked')) {
+        checkbox.classList.remove('checked');
+        checkbox.classList.add('unchecked');
+    } else {
+        checkbox.classList.remove('unchecked');
+        checkbox.classList.add('checked');
+    }
+    const hiddenInput = checkbox.querySelector('input');
+    if (hiddenInput) {
+        hiddenInput.value = checkbox.classList.contains('checked') ? 'true' : 'false';
     }
 }
 
@@ -30,6 +59,9 @@ function workSocket(){
                 window.location.href = '/tests/delete_from_test'
             }
         } else if(data['type'] == 'get_question'){
+            waitingText.remove()
+            document.querySelector('.main').classList.add('test')
+            document.querySelector('.question-block-inactive').classList.add('question-block')
             $.ajax({
                 url: '/tests/get_question',
                 type: 'POST',
@@ -44,29 +76,41 @@ function workSocket(){
                     let data = response.question
                     let questionDiv = document.querySelector('.question-block');
                     questionDiv.innerHTML = ''
+                    let div = document.createElement('div')
+                    div.classList.add('question-div')
                     let question = document.createElement('h2')
                     question.textContent = data['question']
-                    questionDiv.append(question)
+
+                    questionDiv.append(div)
+                    
+                    // questionDiv.append(question)
                     if (data.image){
                         let questionImage = document.createElement('img')
                         questionImage.src = data.image
                         questionImage.classList.add('question-image')
-                        questionDiv.append(questionImage)
+                        // questionDiv.append(questionImage)
+                        div.append(questionImage)
                     }
+                    div.append(question)
                     if (data['answer_type'] === 'multiple_choice') {
                         if (response.user_result){
                             if (!response.question_finished){
                                 coverQuestion()
                             }
                         }
+                        let multipleChoiceDiv = document.createElement('div')
+                        multipleChoiceDiv.classList.add('multiple-choice')
                         let answers = JSON.parse(data['answers'].replace(/'/g, '"'))
                         let answersDiv = document.createElement('div')
-                        questionDiv.append(answersDiv)
+                        answersDiv.classList.add('answers')
+                        multipleChoiceDiv.append(answersDiv)
+                        questionDiv.append(multipleChoiceDiv)
+                        // questionDiv.append(answersDiv)
                         console.log(data)
                         let countCorrectAnsers = data['correct_answer'].split('true').length - 1;
                         for (let index = 0; index < answers.length; index++) {
                             if (countCorrectAnsers > 1){
-                                answersDiv.innerHTML += `<div class='answer'><input type='checkbox'>${answers[index]}</div>`
+                                answersDiv.innerHTML += `<div class='answer'><div class='checkbox unchecked'><input style="display: none;" type='checkbox'></div>${answers[index]}</div>`
                             } else {
                                 answersDiv.innerHTML += `<div class='answer'>${answers[index]}</div>`
                             }
@@ -74,6 +118,8 @@ function workSocket(){
                         if (countCorrectAnsers > 1){
                             let buttonSubmit = document.createElement('button')
                             buttonSubmit.textContent = 'Відправити'
+
+
                             function buttonClickHandler() {
                                 let userAnswers = []
                                 answersDiv.querySelectorAll('input').forEach(function(input) {
@@ -89,6 +135,11 @@ function workSocket(){
                                 answersDiv.innerHTML = ""
                                 answersDiv.innerHTML = html
                                 userAnswers.forEach(function(answer, index) {
+                                    console.log(answer)
+                                    if (answer == true){
+                                        answersDiv.querySelectorAll('.checkbox').classList.add(`checked`)
+                                        answersDiv.querySelector('.checkbox').classList.remove('unchecked')
+                                    }
                                     answersDiv.querySelectorAll('input')[index].checked = answer
                                 })
                                 buttonSubmit.removeEventListener('click', buttonClickHandler)
@@ -101,17 +152,21 @@ function workSocket(){
                                 results.forEach(function(result, index) {
                                     console.log(result)
                                     if (result.indexOf('True') != -1){
+                                        answersDiv.querySelectorAll('.checkbox').classList.add('checked')
+                                        answersDiv.querySelector('.checkbox').classList.remove('unchecked')
                                         answersDiv.querySelectorAll('input')[index].checked = true
                                         answersDiv.querySelectorAll('.answer')[index].classList.add('selected')
                                     }
                                 })
                             }
-                            questionDiv.append(buttonSubmit)
+                            multipleChoiceDiv.append(buttonSubmit)
                         } else if (response.user_result) {
                             let answersDiv = document.querySelector('.question-block').querySelectorAll('.answer')
                             answersDiv.forEach(function(answer){
                                 if (answer.textContent == response.user_result.result) {
                                     answer.classList.add('selected')
+                                    answer.querySelector('.checkbox').classList.add('checked')
+                                    answer.querySelector('.checkbox').classList.remove('unchecked')
                                 }
                             })
                         }
@@ -122,6 +177,8 @@ function workSocket(){
                                     if (countCorrectAnsers > 1){
                                         answer.querySelector('input').checked = !answer.querySelector('input').checked
                                         answer.classList.toggle('selected')
+                                        answer.querySelector('.checkbox').classList.toggle('checked')
+                                        answer.querySelector('.checkbox').classList.toggle('unchecked')
                                     } else {
                                         socket.send(JSON.stringify({
                                             'type': 'send_answer',
@@ -154,13 +211,25 @@ function workSocket(){
                                 }
                             })
                         }
+
+                        let answerDivs = document.querySelectorAll('.answer')
+                        answerDivs.forEach((div, index) => {
+                            div.style.backgroundColor = answerColors[index]
+                        })
                     } else if (data['answer_type'] === 'fill_blank') {
+                        let fillBlankDiv = document.createElement('div')
+                        fillBlankDiv.classList.add('fill-blank-div')
+                        let fillBlankInputDiv = document.createElement('div')
+                        fillBlankInputDiv.classList.add('fill-blank-input-div')
                         let input = document.createElement('input')
                         input.classList.add('fill_blank_input')
-                        questionDiv.append(input)
+                        input.placeholder = 'Ввести відповідь'
+                        fillBlankInputDiv.append(input)
+                        fillBlankDiv.append(fillBlankInputDiv)
                         let buttonSubmit = document.createElement('button')
                         buttonSubmit.textContent = 'Відправити'
-                        questionDiv.append(buttonSubmit)
+                        fillBlankDiv.append(buttonSubmit)
+                        questionDiv.append(fillBlankDiv)
                         if (response['user_result']){
                             input.value = response['user_result']['result']
                             if (!response.question_finished){
@@ -204,20 +273,23 @@ function workSocket(){
                             }
                         }
                     } else if (data['answer_type'] === 'match') {
+                        let matchDiv = document.createElement('div')
+                        matchDiv.classList.add('match-div')
                         let hints = JSON.parse(data['correct_answer'].replace(/'/g, '"'))
                         let answers = JSON.parse(data['answers'].replace(/'/g, '"'))
                         let answersDiv = document.createElement('div')
                         let hintsDiv = document.createElement('div')
                         answersDiv.classList.add('answers-div')
                         hintsDiv.classList.add('hints-div')
-                        questionDiv.append(hintsDiv)
-                        questionDiv.append(answersDiv)
+                        questionDiv.append(matchDiv)
+                        matchDiv.append(hintsDiv)
+                        matchDiv.append(answersDiv)
                         answers.forEach(function(answerText, index){
                             let answer = document.createElement('div')
                             answer.textContent = answerText
                             answer.classList.add('answer-match')
                             answersDiv.append(answer)
-                            answer.style.width = `${90 / answers.length}%`
+                            // answer.style.width = `${90 / answers.length}%`
                         })
                         hints.forEach(function(hintText, index){
                             let hintWrapper = document.createElement('div')
@@ -228,7 +300,7 @@ function workSocket(){
                             hint.id = `hint-${index}`
                             hintsDiv.append(hintWrapper)
                             hintWrapper.append(hint)
-                            hintWrapper.style.width = `${90 / hints.length}%`
+                            // hintWrapper.style.width = `${90 / hints.length}%`
                             if (!response.question_finished && !response.user_result) {
                                 hint.addEventListener('mousedown', function(event) {
                                     let hintRect = hint.getBoundingClientRect()
@@ -268,11 +340,14 @@ function workSocket(){
                                     hint.addEventListener('mouseup', setHint)
                                 })
                             }
+                            document.querySelectorAll('.hint-match').forEach((h, index) => {
+                                h.style.backgroundColor = answerColors[index]
+                            })
                         })
                         let buttonSubmit = document.createElement('button')
                         buttonSubmit.textContent = 'Відправити'
                         buttonSubmit.classList.add('button-submit')
-                        questionDiv.append(buttonSubmit)
+                        matchDiv.append(buttonSubmit)
                         function submitMatch(){
                             let answers = document.querySelectorAll('.answer-match')
                             let hintsText = []
@@ -415,7 +490,7 @@ if(existUser || auth == 'True'){
             let usernameHeader = document.createElement('h3')
             usernameHeader.id = 'username'
             usernameHeader.textContent = name
-            document.body.append(usernameHeader)
+            header.insertBefore(usernameHeader, header.firstChild)
         }
     } else if(auth == 'True'){
         let name = document.getElementById('username').textContent
@@ -423,15 +498,16 @@ if(existUser || auth == 'True'){
     }
     workSocket()
 } else {
+    header.style.display = 'none'
     let main = document.querySelector('.main')
     let form = document.createElement('form')
     let mainBlock = document.createElement('main')
     mainBlock.style.backgroundImage = `url(/static/img/background.png)`
     mainBlock.innerHTML += '<h1>QuizMaster</h1>'
     main.style.display = 'none'
-    main.style.backgroundImage = `url(${main.getAttribute('image')})`
+    // main.style.backgroundImage = `url(${main.getAttribute('image')})`
     form.classList.add('join-form')
-    document.head.innerHTML += `<link rel="stylesheet" href="/static/css/join.css">`
+    // document.head.innerHTML += `<link rel="stylesheet" href="/static/css/join.css">`
     form.innerHTML = `
         <input type="text" class="code-input" name="name" placeholder="Ваше ім'я">
         <button id="sendName">Відправити</button>
@@ -445,12 +521,13 @@ if(existUser || auth == 'True'){
         let usernameHeader = document.createElement('h3')
         usernameHeader.textContent = name
         usernameHeader.id = 'username'
-        document.body.append(usernameHeader)
+        header.insertBefore(usernameHeader, header.firstChild)
+        header.style.display = 'flex'
         document.cookie = `quiz_${quizCode}=${name}; path=/;`
         socketUrl += `?name=${name}`
-        main.style.display = 'block'
-        main.style.backgroundImage = ''
-        document.head.innerHTML = document.head.innerHTML.replace('<link rel="stylesheet" href="/static/css/join.css">', '');
+        main.style.display = 'flex'
+        // main.style.backgroundImage = ''
+        // document.head.innerHTML = document.head.innerHTML.replace('<link rel="stylesheet" href="/static/css/join.css">', '');
         workSocket()
         mainBlock.remove()
     })

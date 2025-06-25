@@ -1,6 +1,8 @@
+.test{
+    padding-top: 128px;
+    justify-content: unset;
+}
 .answer{
-    margin: 10px;
-    border: 1px solid blueviolet;
     cursor: pointer;
 }
 .cover{
@@ -29,6 +31,116 @@
     display: flex;
     gap: 30px;
 }
+.question-block{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: calc(100% - 120px);
+    justify-content: flex-end;
+    align-items: center;
+    padding: 60px 20px;
+    box-sizing: border-box;
+    gap: 170px;
+}
+.question-image{
+    width: 200px;
+}
+header{
+    width: 100%;
+    min-height: 64px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 30px;
+    box-sizing: border-box;
+    background-color: rgba(255, 255, 255, 0.8);
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+header #username{
+    font-size: 22px;
+    font-weight: 600;
+}
+header #button-exit{
+    border-radius: 10px;
+    padding: 13.5px 36px;
+    background-color: #333333;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+}
+.waiting-text{
+    color: white;
+    font-size: 48px;
+}
+.question-div{
+    display: flex;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    width: 75%;
+    padding: 5px 10px;
+    align-items: center;
+}
+.question-div img{
+    min-width: 30%;
+}
+.question-block h2{
+    color: black;
+    font-size: 25px;
+    font-weight: 600;
+    padding: 15px;
+    width: 100%;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.fill-blank-div, .match-div{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 15px;
+}
+.fill-blank-div{
+    height: 325px;
+}
+.fill-blank-input-div{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #112B90;
+    border-radius: 10px;
+}
+.fill-blank-input-div input{
+    width: 55%;
+    height: 40px;
+    border-radius: 5px;
+    border-bottom: 1.25px solid white;
+    background-color: rgba(0, 0, 0, 0.5);
+    text-align: center;
+    color: white;
+    font-size: 16px;
+    padding: 12.5px;
+}
+.fill-blank-input-div input::placeholder{
+    color: #D9D9D9;
+}
+.fill-blank-div button, .match-div button, .multiple-choice button{
+    padding: 10px 20px;
+    border-radius: 10px;
+    background-color: white;
+    border: 1px solid #A9A9A9;
+    font-size: 18px;
+    font-weight: 700;
+}
+.fill-blank-div button:hover, .match-div button:hover, .multiple-choice button:hover{
+    cursor: pointer;
+    background-color: rgb(234, 234, 234);
+}
 .hint-match{
     width: 100%;
     height: 100%;
@@ -41,6 +153,7 @@
     position: absolute;
 }
 .answer-match, .hint-wrapper{
+    width: 100%;
     height: 100px;
     border: solid 2px #D4d4d4;
     display: flex;
@@ -48,12 +161,65 @@
     align-items: center;
     background-color: gray;
     position: relative;
+    background-color: #0a18529c;
+    color: white;
 }
-.question-block{
+.multiple-choice{
+    width: 100%;
+    height: 325px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    align-items: flex-end;
+    gap: 15px;
 }
-.question-image{
-    width: 200px;
+.answers{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    gap: 20px;
+}
+.answers .answer{
+    width: 100%;
+    /* height: 100%; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    border-radius: 10px;
+    padding: 10px;
+    color: white;
+    position: relative;
+}
+
+
+.checkbox {
+    width: 25px;
+    height: 25px;
+    border: 2px solid #ffffff;
+    border-radius: 5px;
+    cursor: pointer;
+    display: inline-block;
+    position: absolute;
+    right: 5px;
+    top: 5px;
+}
+
+.checkbox.checked {
+    background-color: #444bc0;
+}
+
+.checkbox.checked::after {
+    content: '';
+    position: absolute;
+    left: 9px;
+    top: 4px;
+    width: 6px;
+    height: 11px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.checkbox.unchecked {
+    background-color: rgba(9, 9, 9, 0.5);
 }

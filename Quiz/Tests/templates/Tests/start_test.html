@@ -5,21 +5,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Початок тесту</title>
+    <link rel="stylesheet" href="{% static 'css/join.css' %}">
     <link rel="stylesheet" href="{% static 'css/start_test.css' %}">
     <script src="{% static 'js/jquery.js' %}" defer></script>
     <script src="{% static 'js/start_test.js' %}" defer></script>
 </head>
 <body>
-    <div class="main">
-        <input type="hidden" name="auth" value="{{ user.is_authenticated }}" id="auth">
-        {% csrf_token %}
+    <header>
         {% if user.is_authenticated %}
             <input type="hidden" name="" id="userId" value="{{ user.id }}">
             <h3 id="username">{{ user.username }}</h3>
         {% endif %}
-        <h1 id="test_code">{{ test.code }}</h1>
-        <button id="button-exit">Вийти з тесту</button>
-        <div class="question-block">
+        <button id="button-exit">Вийти</button>
+    </header>
+    <div class="main" style="background-image: url('{% static 'img/background.png' %}');">
+        <input type="hidden" name="auth" value="{{ user.is_authenticated }}" id="auth">
+        {% csrf_token %}
+        <h1 id="test_code" style="display: none;">{{ test.code }}</h1>
+        <h1 class="waiting-text">Чекаємо на початок тесту...</h1>
+        <div class="question-block-inactive">
     
         </div>
     </div>
