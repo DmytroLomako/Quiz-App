@@ -3,31 +3,53 @@
 
 {% block title %}Admin Result{% endblock %}
 
+{% block links %}
+    <link rel="stylesheet" href="{% static 'Results/css/admin_result.css' %}">
+{% endblock %}
+
 {% block content %}
-    <table style="margin-top: 200px;">
-        <tr>
-            <td>Учасники</td>
-            <td>Бали</td>
-            {% for percent, index in list_percent %}
-                <td>П{{ index }} <p>{{ percent }}%</p></td>
-            {% endfor %}
-        </tr>
-        {% for name, answers, grade, percent in list_users_result %}
-            <tr>
-                <td>{{ name }}</td>
-                <td>{{ grade }} ({{ percent }}%)</td>
-                {% for answer in answers %}
-                    <td>
-                        {% if answer == 'None' %}
-                            <img style="width: 30px;" src="{% static 'Results/img/no_answer.png' %}" alt="">
-                        {% elif answer == True %}
-                            <img style="width: 30px;" src="{% static 'CreateTest/img/checkmark.png' %}" alt="">
-                        {% else %}
-                            <img style="width: 30px;" src="{% static 'CreateTest/img/cross.png' %}" alt="">
-                        {% endif %}
-                    </td>
+    <div class="result">
+        <div class="table">
+            <div class="info">
+                <div class="info-div">
+                    <img src="{% static 'Results/img/checkmark.png' %}" alt="">
+                    <p>Правильно</p>
+                </div>
+                <div class="info-div">
+                    <img src="{% static 'Results/img/cross.png' %}" alt="">
+                    <p>Неправильно</p>
+                </div>
+                <div class="info-div">
+                    <img src="{% static 'Results/img/no_answer.png' %}" alt="">
+                    <p>Без спроби</p>
+                </div>
+            </div>
+            <table>
+                <tr class="table-info">
+                    <td>Учасники</td>
+                    <td>Бали</td>
+                    {% for percent, index in list_percent %}
+                        <td>П{{ index }} <p>{{ percent }}%</p></td>
+                    {% endfor %}
+                </tr>
+                {% for name, answers, grade, percent in list_users_result %}
+                    <tr>
+                        <td>{{ name }}</td>
+                        <td>{{ grade }} ({{ percent }}%)</td>
+                        {% for answer in answers %}
+                            <td>
+                                {% if answer == 'None' %}
+                                    <img style="width: 30px;" src="{% static 'Results/img/no_answer.png' %}" alt="">
+                                {% elif answer == True %}
+                                    <img style="width: 30px;" src="{% static 'Results/img/checkmark.png' %}" alt="">
+                                {% else %}
+                                    <img style="width: 30px;" src="{% static 'Results/img/cross.png' %}" alt="">
+                                {% endif %}
+                            </td>
+                        {% endfor %}
+                    </tr>
                 {% endfor %}
-            </tr>
-        {% endfor %}
-    </table>
+            </table>
+        </div>
+    </div>
 {% endblock %}

@@ -20,12 +20,6 @@
     text-align: center;
     user-select: none;
 }
-.correct{
-    border: 2px solid green;
-}
-.incorrect{
-    border: 2px solid red;
-}
 .answers-div, .hints-div{
     width: 100%;
     display: flex;
@@ -36,11 +30,10 @@
     flex-direction: column;
     width: 100%;
     height: calc(100% - 120px);
-    justify-content: flex-end;
+    justify-content: space-between;
     align-items: center;
-    padding: 60px 20px;
+    padding: 0px 20px 60px 20px;
     box-sizing: border-box;
-    gap: 170px;
 }
 .question-image{
     width: 200px;
@@ -82,8 +75,19 @@ header #button-exit{
     padding: 5px 10px;
     align-items: center;
 }
-.question-div img{
-    min-width: 30%;
+.question-image-wrapper{
+    min-width: 200px;
+    height: 200px;
+    max-width: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.horizontal{
+    width: 100%;
+}
+.vertical{
+    height: 100%;
 }
 .question-block h2{
     color: black;
@@ -163,6 +167,7 @@ header #button-exit{
     position: relative;
     background-color: #0a18529c;
     color: white;
+    text-align: center;
 }
 .multiple-choice{
     width: 100%;

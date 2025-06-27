@@ -85,11 +85,20 @@ function workSocket(){
                     
                     // questionDiv.append(question)
                     if (data.image){
+                        let questionImageWrapper = document.createElement('div')
+                        questionImageWrapper.classList.add('question-image-wrapper')
                         let questionImage = document.createElement('img')
                         questionImage.src = data.image
                         questionImage.classList.add('question-image')
                         // questionDiv.append(questionImage)
-                        div.append(questionImage)
+                        questionImageWrapper.append(questionImage)
+                        div.append(questionImageWrapper)
+                        console.log(questionImage.naturalWidth, questionImage.naturalHeight)
+                        if (questionImage.naturalWidth > questionImage.naturalHeight){
+                            questionImage.classList.add('horizontal')
+                        } else {
+                            questionImage.classList.add('vertical')
+                        }
                     }
                     div.append(question)
                     if (data['answer_type'] === 'multiple_choice') {
@@ -107,12 +116,19 @@ function workSocket(){
                         questionDiv.append(multipleChoiceDiv)
                         // questionDiv.append(answersDiv)
                         console.log(data)
+                        let answerImages = response.answer_images
                         let countCorrectAnsers = data['correct_answer'].split('true').length - 1;
                         for (let index = 0; index < answers.length; index++) {
                             if (countCorrectAnsers > 1){
                                 answersDiv.innerHTML += `<div class='answer'><div class='checkbox unchecked'><input style="display: none;" type='checkbox'></div>${answers[index]}</div>`
                             } else {
                                 answersDiv.innerHTML += `<div class='answer'>${answers[index]}</div>`
+                            }
+                            if (answerImages[index]){
+                                let answerImage = document.createElement('img')
+                                answerImage.src = answerImages[index]
+                                answerImage.classList.add('answer-image')
+                                answersDiv.querySelectorAll('.answer')[index].append(answerImage)
                             }
                         }
                         if (countCorrectAnsers > 1){
@@ -204,9 +220,11 @@ function workSocket(){
                                 let answerDiv = document.querySelector('.question-block').querySelectorAll('.answer')[index]
                                 if (answer.indexOf('true') != -1){
                                     answerDiv.classList.add('correct')
+                                    answerDiv.style.backgroundColor = 'green'
                                 } else {
                                     if (answerDiv.classList.contains('selected')){
                                         answerDiv.classList.add('incorrect')
+                                        answerDiv.style.backgroundColor = 'red'
                                     }
                                 }
                             })
@@ -268,8 +286,10 @@ function workSocket(){
                             })
                             if (input.value == correctAnswer || correct){
                                 input.classList.add('correct')
+                                input.style.backgroundColor = 'green'
                             } else {
                                 input.classList.add('incorrect')
+                                input.style.backgroundColor = 'red'
                             }
                         }
                     } else if (data['answer_type'] === 'match') {
@@ -279,6 +299,9 @@ function workSocket(){
                         let answers = JSON.parse(data['answers'].replace(/'/g, '"'))
                         let answersDiv = document.createElement('div')
                         let hintsDiv = document.createElement('div')
+                        
+                        let answerImages = response.answer_images
+
                         answersDiv.classList.add('answers-div')
                         hintsDiv.classList.add('hints-div')
                         questionDiv.append(matchDiv)
@@ -289,13 +312,25 @@ function workSocket(){
                             answer.textContent = answerText
                             answer.classList.add('answer-match')
                             answersDiv.append(answer)
+                            if (answerImages[`answer_${index}`]){
+                                let answerImg = document.createElement('img')
+                                answerImg.src = answerImages[`answer_${index}`]
+                                answer.append(answerImg)
+                            }
                             // answer.style.width = `${90 / answers.length}%`
                         })
                         hints.forEach(function(hintText, index){
                             let hintWrapper = document.createElement('div')
                             hintWrapper.classList.add('hint-wrapper')
                             let hint = document.createElement('div')
+                            console.log(answerImages[`hint_${index}`])
                             hint.textContent = hintText
+                            if (answerImages[`hint_${index}`]){
+                                let hintImg = document.createElement('img')
+                                hintImg.src = answerImages[`hint_${index}`]
+                                hint.append(hintImg)
+                                console.log(hintImg)
+                            }
                             hint.classList.add('hint-match')
                             hint.id = `hint-${index}`
                             hintsDiv.append(hintWrapper)
@@ -385,11 +420,14 @@ function workSocket(){
                                 if (answer.querySelector('.hint-match')){
                                     if (answer.querySelector('.hint-match').textContent == correctAnswer[index]){
                                         answer.querySelector('.hint-match').classList.add('correct')
+                                        answer.querySelector('.hint-match').style.backgroundColor = 'green'
                                     } else {
                                         answer.querySelector('.hint-match').classList.add('incorrect')
+                                        answer.querySelector('.hint-match').style.backgroundColor = 'red'
                                     }
                                 } else {
                                     answer.classList.add('incorrect')
+                                    answer.style.backgroundColor = 'red'
                                 }
                             })
                         }
@@ -409,9 +447,11 @@ function workSocket(){
                     let answerDiv = document.querySelector('.question-block').querySelectorAll('.answer')[index]
                     if (answer.indexOf('true') != -1){
                         answerDiv.classList.add('correct')
+                        answerDiv.style.backgroundColor = 'green'
                     } else {
                         if (answerDiv.classList.contains('selected')){
                             answerDiv.classList.add('incorrect')
+                            answerDiv.style.backgroundColor = 'red'
                         }
                     }
                 })
@@ -436,8 +476,10 @@ function workSocket(){
                 })
                 if (userAnswer.value == correctAnswer || correct){
                     userAnswer.classList.add('correct')
+                    userAnswer.style.backgroundColor = 'green'
                 } else {
                     userAnswer.classList.add('incorrect')
+                    userAnswer.style.backgroundColor = 'red'
                 }
             } else if (data['question_type'] == 'match') {
                 let answers = document.querySelectorAll('.answer-match')
@@ -446,11 +488,14 @@ function workSocket(){
                     if (answer.querySelector('.hint-match')){
                         if (answer.querySelector('.hint-match').textContent == correctAnswer[index]){
                             answer.querySelector('.hint-match').classList.add('correct')
+                            answer.querySelector('.hint-match').style.backgroundColor = 'green'
                         } else {
                             answer.querySelector('.hint-match').classList.add('incorrect')
+                            answer.querySelector('.hint-match').style.backgroundColor = 'red'
                         }
                     } else {
                         answer.classList.add('incorrect')
+                        answer.style.backgroundColor = 'red'
                     }
                 })
 

@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import *
 from django.http import Http404
 from CreateTest.models import *
@@ -142,3 +142,10 @@ def render_user_result(request, result_url):
         })
     else:
         return Http404('Такого результату не існує')
+    
+def render_reports(request):
+    admin_results = AdminResult.objects.filter(admin = request.user)
+    if admin_results:
+        return render(request, 'Results/reports.html', context={'results': admin_results})
+    else:
+        return redirect('/')

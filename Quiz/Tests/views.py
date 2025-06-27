@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from .models import *
+from CreateTest.models import AnswerImage
 from django.forms.models import model_to_dict
 import random, json
 
@@ -75,7 +76,16 @@ def get_question(request):
                     question_data['correct_hints'] = str(hints)
                     random.shuffle(hints)
                     question_data['correct_answer'] = str(hints)
-                return JsonResponse({'question': question_data, "user_result": result, 'question_finished': start_test.question_finished})
+                answer_images_dict = {}
+                answer_images = AnswerImage.objects.filter(question=question)
+                for image in answer_images:
+                    answer_images_dict[image.answer_id] = image.image.url
+                return JsonResponse({
+                    'question': question_data, 
+                    "user_result": result, 
+                    'question_finished': start_test.question_finished,
+                    'answer_images': answer_images_dict
+                })
         return JsonResponse({'question': None})
     
 def render_join(request):

@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Reports{% endblock %}
+
+{% block links %}
+    <link rel="stylesheet" href="{% static 'Results/css/reports.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="content">
+        <div class="results">
+            {% for result in results %}
+                <div class="result">
+                    <div><p>{{ result.test.name }}</p> <p>{{ result.date }}</p></div>
+                    <a href="{% url 'amin_result' result.id %}"><button>Перейти</button></a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
