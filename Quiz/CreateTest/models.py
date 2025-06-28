@@ -24,7 +24,7 @@ class Test(models.Model):
 class Question(models.Model):
     question_number = models.IntegerField(default=0)
     question = models.CharField(max_length=255)
-    image = models.ImageField(upload_to='question')
+    image = models.ImageField(upload_to='question', null=True, blank=True)
     answers = models.TextField(null=True)
     answer_type = models.CharField(max_length=50)
     correct_answer = models.TextField()

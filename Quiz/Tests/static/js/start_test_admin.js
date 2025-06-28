@@ -106,8 +106,32 @@ socket.onmessage = function(event){
                 if ( data.answer_type == 'multiple_choice' ){
                     let answers = JSON.parse(data['answers'].replace(/'/g, '"'))
                     answers.forEach(function(answer, index){
-                        answersDiv.innerHTML += `<div class="answer">${ answer }</div>`
+                        let answerElem = document.createElement('div')
+                        answerElem.classList.add('answer')
+                        answerElem.textContent = answer
+                        answersDiv.append(answerElem)
                     })
+                } else if (data.answer_type == 'match'){
+                    let hintsDiv = document.createElement('div')
+                    hintsDiv.classList.add('hints-div')
+                    let correctAnswersDiv = document.createElement('div')
+                    correctAnswersDiv.classList.add('answers-div')
+                    let hints = JSON.parse(data['answers'].replace(/'/g, '"'))
+                    let correct_answer = JSON.parse(data['correct_answer'].replace(/'/g, '"'))
+                    hints.forEach(function(hint, index){
+                        let hintElem = document.createElement('div')
+                        hintElem.classList.add('answer')
+                        hintElem.textContent = hint
+                        hintsDiv.append(hintElem)
+                    })
+                    correct_answer.forEach(function(answer, index){
+                        let correct_answerElem = document.createElement('div')
+                        correct_answerElem.classList.add('answer')
+                        correct_answerElem.textContent = answer
+                        correctAnswersDiv.append(correct_answerElem)
+                    })
+                    answersDiv.append(hintsDiv)
+                    answersDiv.append(correctAnswersDiv)
                 }
                 questionDiv.appendChild(answersDiv)
                 head.appendChild(questionDiv)

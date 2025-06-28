@@ -125,10 +125,13 @@ function workSocket(){
                                 answersDiv.innerHTML += `<div class='answer'>${answers[index]}</div>`
                             }
                             if (answerImages[index]){
+                                let blockImg = document.createElement('div')
+                                blockImg.classList.add('block-image')
                                 let answerImage = document.createElement('img')
                                 answerImage.src = answerImages[index]
                                 answerImage.classList.add('answer-image')
-                                answersDiv.querySelectorAll('.answer')[index].append(answerImage)
+                                answersDiv.querySelectorAll('.answer')[index].prepend(blockImg)
+                                blockImg.append(answerImage)
                             }
                         }
                         if (countCorrectAnsers > 1){
@@ -313,9 +316,13 @@ function workSocket(){
                             answer.classList.add('answer-match')
                             answersDiv.append(answer)
                             if (answerImages[`answer_${index}`]){
+                                let blockImg = document.createElement('div')
+                                blockImg.classList.add('block-image')
                                 let answerImg = document.createElement('img')
+                                answerImg.draggable = false
                                 answerImg.src = answerImages[`answer_${index}`]
-                                answer.append(answerImg)
+                                blockImg.append(answerImg)
+                                answer.prepend(blockImg)
                             }
                             // answer.style.width = `${90 / answers.length}%`
                         })
@@ -326,10 +333,13 @@ function workSocket(){
                             console.log(answerImages[`hint_${index}`])
                             hint.textContent = hintText
                             if (answerImages[`hint_${index}`]){
+                                let blockImg = document.createElement('div')
+                                blockImg.classList.add('block-image')
                                 let hintImg = document.createElement('img')
+                                hintImg.draggable = false   
                                 hintImg.src = answerImages[`hint_${index}`]
-                                hint.append(hintImg)
-                                console.log(hintImg)
+                                blockImg.append(hintImg)
+                                hint.prepend(blockImg)
                             }
                             hint.classList.add('hint-match')
                             hint.id = `hint-${index}`

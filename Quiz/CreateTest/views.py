@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect
 from .models import *
-import random
+import random, ast
 from Tests.models import StartTest
 from django.contrib.auth.decorators import login_required
+from .create_with_ai import create_test
 
 # Create your views here.
 
@@ -282,3 +283,37 @@ def delete_test(request, test_id):
         test.delete()
         return redirect('library')
     return redirect('/')
+
+@login_required(login_url='/auth/')
+def redner_create_ai(request):
+    if request.POST:
+        test_name = request.POST.get('test_name')
+        test_logo = request.FILES.get('test_logo')
+        test_topic = request.POST.get('test_topic')
+        multiple_choice_num = request.POST.get('multiple_choice_num')
+        fill_blank_num = request.POST.get('fill_blank_num')
+        match_num = request.POST.get('match_num')
+        test_wishes = request.POST.get('test_wishes')
+        
+        content = create_test(test_topic, multiple_choice_num, fill_blank_num, match_num, test_wishes)
+        list_questions = ast.literal_eval(content)['list_question']
+        random.shuffle(list_questions)
+        print(list_questions)
+        test = Test.objects.create(
+            user=request.user,
+            name=test_name,
+            logo=test_logo
+        )
+        test.save()
+        for index, question in enumerate(list_questions):
+            created_question = Question.objects.create(
+                question_number = index,
+                question = question['question_text'],
+                answers = question['answers'],
+                answer_type = question['type'],
+                correct_answer = question['correct_answer'],
+                test = test
+            )
+            created_question.save()
+        return redirect('test_info', test.id)
+    return render(request, 'CreateTest/create_ai.html')

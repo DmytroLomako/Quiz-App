@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Створення з ШІ{% endblock %}
+
+{% block links %}
+    <link rel="stylesheet" href="{% static 'CreateTest/css/create_ai.css' %}">
+    <script src="{% static 'js/jquery.js' %}" defer></script>
+    <script src="{% static 'CreateTest/js/create_ai.js' %}" defer></script>
+{% endblock %}
+
+{% block content %}
+    <div class="content">
+        <div class="loader-container" style="display: none;">
+            <div class="loader">
+
+            </div>
+        </div>
+        <form action="" method="post" enctype="multipart/form-data" class="cool-form">
+            {% csrf_token %}
+            <label for="testName">Ім'я тесту</label>
+            <input type="text" name="test_name" id="testName" required>
+            
+            <label for="testLogo">Логотип тесту</label>
+            <input type="file" name="test_logo" id="testLogo">
+
+            <label for="testTopic">Тема, на яку буде згенерован тест</label>
+            <input type="text" name="test_topic", id="testTopic">
+
+            <label for="mCN">Кількість питань типу множинний вибір</label>
+            <input type="number" name="multiple_choice_num" id="mCN">
+
+            <label for="fBN">Кількість питань типу заповни бланк</label>
+            <input type="number" name="fill_blank_num" id="fBN">
+
+            <label for="mN">Кількість питань типу поєднання</label>
+            <input type="number" name="match_num" id="mN">
+
+            <label for="testWishes">Побажання до тесту (важливі теми та інше)</label>
+            <textarea name="test_wishes" id="testWishes"></textarea>
+
+            <button>Відправити</button>
+        </form>
+    </div>
+{% endblock %}

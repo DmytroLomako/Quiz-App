@@ -7,12 +7,13 @@
     <title>{% block title %}{% endblock %}</title>
     {% block links %}{% endblock %}
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <script src="{% static 'js/base.js' %}" defer></script>
 </head>
 <body>
     <div class="menu">
         <a href="/"><h1>QuizMaster</h1></a>
         {% if user.is_authenticated %}
-            <a href="/create_quiz/"><button class="button-create">Створити тест</button></a>
+            <button class="button-create">Створити тест</button>
             <a class="home-link link" href="/">Головна</a>
             <a class="tests-link link" href="/create_quiz/library">Тести</a>
             <a href="{% url 'reports' %}" class="link">Звіти</a>
@@ -30,5 +31,25 @@
     </div>
         {% block content %}{% endblock %}
     </div>
+    {% if user.is_authenticated %}
+        <div class="overlay-base" style="display: none;">
+            <div class="popup">
+                <img class="cross-popup" src="{% static 'img/cross-popup.png' %}" alt="">
+                <h1>Оберіть спосіб створення тесту</h1>
+                <a href="/create_quiz/">
+                    <div class="create">
+                        <div class="popup-head-div"><img src="{% static 'img/yourself.png' %}" alt=""><h2>Власноруч</h2></div>
+                        <p>Самостійно сформуйте запитання, варіанти відповідей та налаштування тесту. Повний контроль над вмістом і структурою</p>
+                    </div>
+                </a>
+                <a href="{% url 'create_ai' %}">
+                    <div class="create">
+                        <div class="popup-head-div"><img src="{% static 'img/ai.png' %}" alt=""><h2>За допомогою ШІ</h2></div>
+                        <p>Опишіть тему або ціль тесту, і система згенерує запитання автоматично на основі ваших вхідних даних</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    {% endif %}
 </body>
 </html>

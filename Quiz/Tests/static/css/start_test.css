@@ -4,6 +4,8 @@
 }
 .answer{
     cursor: pointer;
+    display: flex;
+    flex-direction: column;
 }
 .cover{
     height: 100%;
@@ -24,6 +26,23 @@
     width: 100%;
     display: flex;
     gap: 30px;
+}
+.block-image{
+    aspect-ratio: 1 / 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.answer-match .block-image, .hint-wrapper .block-image{
+    height: 50%;
+}
+.answer .block-image{
+    width: 50%;
+}
+.block-image img{
+    max-width: 100%;
+    max-height: 100%;
+    display: flex;
 }
 .question-block{
     display: flex;
@@ -168,6 +187,9 @@ header #button-exit{
     background-color: #0a18529c;
     color: white;
     text-align: center;
+}
+.answer-match, .hint-match{
+    flex-direction: column;
 }
 .multiple-choice{
     width: 100%;

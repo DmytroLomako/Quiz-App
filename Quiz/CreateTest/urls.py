@@ -12,5 +12,6 @@ urlpatterns = [
     path('edit/<int:test_id>/question/<int:question_id>/<str:question_type>', render_edit_test, name='edit_test'),
     path('delete_question/<int:test_id>/<int:question_id>/', delete_question, name='delete_question'),
     path('save_test/<int:test_id>/', save_test, name='save_test'),
-    path('delete_test/<int:test_id>/', delete_test, name='delete_test')
+    path('delete_test/<int:test_id>/', delete_test, name='delete_test'),
+    path('create_with_ai/', redner_create_ai, name='create_ai')
 ]
