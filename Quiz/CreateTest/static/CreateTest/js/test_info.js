@@ -78,3 +78,63 @@ deleteImageButton.addEventListener('click', function() {
     }
     coverImageInput.value = '';
 });
+
+let questionDivs = document.querySelectorAll('.question-div');
+let listRect = [];
+function updateListRect(){
+    listRect = []
+    document.querySelectorAll('.question-div').forEach(function(qDiv){
+        listRect.push([qDiv, qDiv.getBoundingClientRect()])
+    })
+}
+questionDivs.forEach(function(qDiv){
+    let dragButton = qDiv.querySelector('.button-drag');
+    dragButton.addEventListener('mouseenter', function(e) {
+        qDiv.draggable = true
+    })
+    dragButton.addEventListener('mouseleave', function(e) {
+        qDiv.draggable = false
+    })
+
+    qDiv.addEventListener('dragstart', updateListRect)
+
+    qDiv.addEventListener('drag', function(event){
+        let qDivFlag = false
+        listRect.forEach(function(rect, rectIndex) {
+            if (rect[0] != qDiv) {
+                if (qDivFlag) {
+                    // Элементы ниже
+                    if (event.clientY > rect[1].top && event.clientY < rect[1].bottom) {
+                        let scrollY = qDiv.parentElement.scrollTop
+                        qDiv.parentElement.insertBefore(qDiv, rect[0].nextSibling)
+                        qDiv.parentElement.scrollTop = scrollY
+                        console.log('down')
+                        updateListRect();
+                        // window.scrollTo(0, scrollY)
+                        // window.scrollTo(0, window.scrollY + qDiv.getBoundingClientRect().height)
+                    }
+                } else {
+                    // Элементы выше
+                    if (event.clientY < rect[1].bottom && event.clientY > rect[1].top && event.clientY != 0) {
+                        let scrollY = qDiv.parentElement.scrollTop
+                        qDiv.parentElement.insertBefore(qDiv, rect[0])
+                        qDiv.parentElement.scrollTop = scrollY
+                        console.log(event.clientY)
+                        console.log('up')
+                        updateListRect();
+                    }
+                }
+            } else {
+                qDivFlag = true
+            }
+        })
+    })
+    
+    qDiv.addEventListener('dragend', function(event) {
+        console.log('finish')
+    })
+})
+// window.addEventListener('scroll', () => {
+//     updateListRect()
+//     console.log('scroll')
+// })

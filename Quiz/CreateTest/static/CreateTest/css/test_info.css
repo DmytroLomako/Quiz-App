@@ -13,12 +13,13 @@ header h3{
 main{
     padding: 0 15%;
     padding-top: 50px;
-    height: auto;
+    height: calc(100% - 54px);
     box-sizing: border-box;
     justify-content: flex-start;
     flex-direction: column;
     gap: 50px;
-    margin-bottom: 40px;
+    padding-bottom: 40px;
+    overflow-y: auto;
 }
 .test-info{
     width: 100%;
@@ -339,4 +340,7 @@ hr{
 }
 .answer-image-wrapper{
     margin-right: 8px;
+}
+.button-drag img{
+    user-select: none;
 }

@@ -38,9 +38,9 @@
             </div>
         </div>
         {% for question in test.question_set.all %}
-            <div class="question-div">
+            <div class="question-div" draggable="false">
                 <div class="question-actions">
-                    <button class="button-drag"><img src="{% static 'CreateTest/img/dots.svg' %}" alt=""></button>
+                    <button class="button-drag"><img draggable="false" src="{% static 'CreateTest/img/dots.svg' %}" alt=""></button>
                     <button class="question-type">{{ question.question_number|add:"1" }}. {{ question.answer_type }}</button>
                     <select class="select-type" style="background-image: url({% static 'CreateTest/img/dropdown_arrow.png' %});">
                         {% for i in range %}
